@@ -16,7 +16,7 @@
     },
     {
       "name": "🎬 Películas y Series",
-      "playlists": []
+      "playlists": [{ "name": "Peliculas", "url": "https://tecnotv.club/jbvk/peliculas.m3u", "user": "", "pass": "" }]
     }
   ]
 }
