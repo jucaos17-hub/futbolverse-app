@@ -1,20 +1,11 @@
 {
   "version": 1,
-  "updated": "2026-06-09",
+  "updated": "2026-06-10",
   "categories": [
-    {
-      "name": "🔒 Mis Listas Privadas",
-      "playlists": [
-        { "name": "⭐ IPTV JUAN (IPTVMaster)", "url": "http://soporte-visual2.com:8080", "user": "espanistv", "pass": "mJJ3rwfgdYuV" },
-        { "name": "🔥 LatinaPro (Lázaro)", "url": "http://latinapro.net:25461", "user": "lazaroperez", "pass": "perez3" }
-      ]
-    },
     {
       "name": "📺 TV en Vivo",
       "playlists": [
-        { "name": "🌎 Latinoamérica (Todos los canales)", "url": "https://tecnotv.club/jbvk/lista1.m3u", "user": "", "pass": "" },
-        { "name": "🌎 TecnoTV B9A2 Lista 1", "url": "http://tecnotv.club/b9a2/lista1.m3u", "user": "", "pass": "" },
-        { "name": "🇲🇽 TecnoTV B9A2 GeoMex", "url": "http://tecnotv.club/b9a2/geomex.m3u", "user": "", "pass": "" }
+        { "name": "🌎 Latinoamérica (Todos los canales)", "url": "https://tecnotv.club/jbvk/lista1.m3u", "user": "", "pass": "" }
       ]
     },
     {
@@ -25,7 +16,16 @@
     },
     {
       "name": "🎬 Películas y Series",
-      "playlists": [{ "name": "Peliculas", "url": "https://tecnotv.club/jbvk/peliculas.m3u", "user": "", "pass": "" }]
+      "playlists": [
+        { "name": "Peliculas", "url": "https://tecnotv.club/jbvk/peliculas.m3u", "user": "", "pass": "" }
+      ]
+    },
+    {
+      "name": "🔞 Contenido +18",
+      "playlists": [
+        { "name": "🔥 Adultos IPTV Free 1", "url": "https://iptvfree-adultos001.blogspot.com", "user": "", "pass": "" },
+        { "name": "😈 Adultos IPTV Free 2", "url": "https://adultosiptvfree.blogspot.com", "user": "", "pass": "" }
+      ]
     }
   ]
 }
