@@ -1,6 +1,6 @@
 import './styles/index.css';
 import { renderHeader } from './components/header.js';
-import { registerRoute, initRouter } from './router.js';
+import { registerRoute, initRouter, navigateTo } from './router.js';
 import { renderDashboard } from './pages/dashboard.js';
 import { renderCompetitions } from './pages/competitions.js';
 import { renderStandingsPage } from './pages/standings.js';
