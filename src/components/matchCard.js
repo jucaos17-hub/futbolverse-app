@@ -1,7 +1,7 @@
 import { formatTime, formatScore, isLive, isFinished, translateStatus } from '../utils/formatters.js';
 import { PLACEHOLDER_CREST, BROADCASTERS, DEFAULT_BROADCASTER } from '../utils/constants.js';
 
-export function renderMatchCard(match) {
+export function renderMatchCard(match, internalStreamUrl = null) {
   const home = match.homeTeam;
   const away = match.awayTeam;
   const status = match.status;
@@ -42,18 +42,30 @@ export function renderMatchCard(match) {
   
   let broadcastHtml = '';
   if (!finished) {
-    broadcastHtml = `
-      <div class="broadcast-wrapper" onclick="event.stopPropagation()">
-        <div class="broadcast-title">📺 Dónde Ver</div>
-        <div class="broadcast-list">
-          ${broadcasterInfo.channels.map(ch => `
-            <a href="${ch.url}" target="_blank" rel="noopener noreferrer" class="broadcast-link" title="${ch.desc}">
-              <span>${ch.icon}</span> ${ch.name}
-            </a>
-          `).join('')}
+    if (internalStreamUrl) {
+      // Native IPTV Player Button
+      broadcastHtml = `
+        <div class="broadcast-wrapper" onclick="event.stopPropagation()">
+          <button class="btn btn--primary" style="width: 100%; padding: 8px; font-weight: bold; font-size: 14px; background: #e11d48; border: none; border-radius: 8px; cursor: pointer; color: white;" onclick="window.playInternalStream('${internalStreamUrl}')">
+            🔴 VER PARTIDO EN MI TV
+          </button>
         </div>
-      </div>
-    `;
+      `;
+    } else {
+      // Standard External Links
+      broadcastHtml = `
+        <div class="broadcast-wrapper" onclick="event.stopPropagation()">
+          <div class="broadcast-title">📺 Dónde Ver (Links Externos)</div>
+          <div class="broadcast-list">
+            ${broadcasterInfo.channels.map(ch => `
+              <a href="${ch.url}" target="_blank" rel="noopener noreferrer" class="broadcast-link" title="${ch.desc}">
+                <span>${ch.icon}</span> ${ch.name}
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
   }
 
   // We change the structure slightly to allow the broadcast to span full width below

@@ -37,7 +37,20 @@ export async function renderDashboard(container) {
         }
       }
 
-      renderMatchesList(matches, date, isUpcoming);
+      // Fetch remote live streams mapping if available
+      let liveStreams = {};
+      try {
+        const url = 'https://raw.githubusercontent.com/jucaos17-hub/futbolverse-app/main/live_streams.json?t=' + Date.now();
+        const res = await fetch(url);
+        if (res.ok) {
+          const streamData = await res.json();
+          liveStreams = streamData.matches || {};
+        }
+      } catch (e) {
+        console.warn('Could not fetch live_streams.json', e);
+      }
+
+      renderMatchesList(matches, date, isUpcoming, liveStreams);
     } catch (err) {
       console.error('[Dashboard] Error loading matches:', err);
       const contentArea = document.getElementById('dashboard-matches');
@@ -53,7 +66,7 @@ export async function renderDashboard(container) {
     }
   }
 
-  function renderMatchesList(matches, date, isUpcoming = false) {
+  function renderMatchesList(matches, date, isUpcoming = false, liveStreams = {}) {
     const contentArea = document.getElementById('dashboard-matches');
     if (!contentArea) return;
 
@@ -105,7 +118,7 @@ export async function renderDashboard(container) {
             <span class="section-group__count">${group.matches.length} partido${group.matches.length !== 1 ? 's' : ''}</span>
           </div>
           <div class="matches-grid">
-            ${group.matches.map(m => renderMatchCard(m)).join('')}
+            ${group.matches.map(m => renderMatchCard(m, liveStreams[m.id])).join('')}
           </div>
         </div>
       `;

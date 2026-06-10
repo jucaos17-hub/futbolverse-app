@@ -357,7 +357,21 @@ export function attachIptvEvents() {
   const savedUser = localStorage.getItem('iptv_server_user');
   const savedPass = localStorage.getItem('iptv_server_pass');
   
-  if (savedUrl && urlInput) {
+  // Check if there is a direct play URL from a match card
+  const directPlayUrl = localStorage.getItem('iptv_direct_play_url');
+  
+  if (directPlayUrl) {
+    // If arriving from a Match Card "VER EN VIVO", auto load the direct stream
+    localStorage.removeItem('iptv_direct_play_url'); // clear it
+    
+    // Auto-select empty or clear the dropdown
+    if (savedListsSelect) savedListsSelect.value = '';
+    
+    // Play immediately instead of parsing as playlist
+    setTimeout(() => {
+      playStream(directPlayUrl);
+    }, 300);
+  } else if (savedUrl && urlInput) {
     urlInput.value = savedUrl;
     if (userInput && savedUser) userInput.value = savedUser;
     if (passInput && savedPass) passInput.value = savedPass;
