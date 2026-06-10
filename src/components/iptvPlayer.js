@@ -225,7 +225,8 @@ export function attachIptvEvents() {
 
   const fallbackPlaylists = [
     { name: '🌎 IPTV-Org (Latinoamérica)', url: 'https://iptv-org.github.io/iptv/languages/spa.m3u', user: '', pass: '', category: '📺 TV en Vivo' },
-    { name: '⚽ TecnoTV Deportes', url: 'https://tecnotv.club/jbvk/deportes.m3u', user: '', pass: '', category: '⚽ Deportes' }
+    { name: '⚽ TecnoTV Deportes', url: 'https://tecnotv.club/jbvk/deportes.m3u', user: '', pass: '', category: '⚽ Deportes' },
+    { name: '🎬 Películas Públicas', url: 'https://iptv-org.github.io/iptv/categories/movies.m3u', user: '', pass: '', category: '🎬 Películas y Series' }
   ];
 
   let playlists = [];
