@@ -1,0 +1,58 @@
+const API_KEY = 'f93a91526c234116b729d653cb461953';
+
+// En desarrollo (Vite dev server) usa proxy relativo; en producción/APK usa URL absoluta
+const isNativeApp = window.location.protocol === 'file:' || window.location.protocol === 'capacitor:';
+const BASE_URL = isNativeApp
+  ? 'https://api.football-data.org/v4'
+  : '/api/v4';
+
+let requestQueue = [];
+let isProcessing = false;
+
+async function processQueue() {
+  if (isProcessing || requestQueue.length === 0) return;
+  isProcessing = true;
+
+  while (requestQueue.length > 0) {
+    const { url, resolve, reject } = requestQueue.shift();
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'X-Auth-Token': API_KEY,
+        },
+      });
+
+      if (response.status === 429) {
+        // Rate limited — wait and retry
+        console.warn('[API] Rate limited, waiting 6s...');
+        await new Promise(r => setTimeout(r, 6000));
+        requestQueue.unshift({ url, resolve, reject });
+        continue;
+      }
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      resolve(data);
+    } catch (err) {
+      reject(err);
+    }
+
+    // Small delay between requests to respect rate limits
+    if (requestQueue.length > 0) {
+      await new Promise(r => setTimeout(r, 700));
+    }
+  }
+
+  isProcessing = false;
+}
+
+export function apiGet(endpoint) {
+  const url = `${BASE_URL}${endpoint}`;
+  return new Promise((resolve, reject) => {
+    requestQueue.push({ url, resolve, reject });
+    processQueue();
+  });
+}

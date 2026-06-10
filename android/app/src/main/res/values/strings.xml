@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FútbolVerse</string>
+    <string name="title_activity_main">FútbolVerse</string>
+    <string name="package_name">com.futbolverse.app</string>
+    <string name="custom_url_scheme">com.futbolverse.app</string>
+</resources>

@@ -1,0 +1,16 @@
+{
+  "name": "FútbolVerse",
+  "short_name": "FútbolVerse",
+  "description": "Tu centro de fútbol e IPTV personal.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#1f6feb",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "appId": "com.futbolverse.app",
+  "appName": "FútbolVerse",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": ["*"]
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false,
+    "overrideUserAgent": "IPTVSmarters",
+    "appendUserAgent": "FutbolVerse/1.0"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0d1117",
+      "androidSplashResourceName": "splash",
+      "showSpinner": true,
+      "spinnerColor": "#1f6feb"
+    }
+  }
+}

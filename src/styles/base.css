@@ -1,0 +1,111 @@
+/* ═══ Reset ═══ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--ff-body);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-regular);
+  line-height: 1.6;
+  color: var(--clr-text);
+  background-color: var(--clr-bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══ Scrollbar ═══ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--clr-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--clr-border);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--clr-text-muted);
+}
+
+/* ═══ Selection ═══ */
+::selection {
+  background: var(--clr-primary);
+  color: white;
+}
+
+/* ═══ Links ═══ */
+a {
+  color: var(--clr-primary-light);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+a:hover {
+  color: var(--clr-accent);
+}
+
+/* ═══ Images ═══ */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ═══ Lists ═══ */
+ul, ol {
+  list-style: none;
+}
+
+/* ═══ Buttons ═══ */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* ═══ Inputs ═══ */
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* ═══ Focus Visible ═══ */
+:focus-visible {
+  outline: 2px solid var(--clr-primary);
+  outline-offset: 2px;
+}
+
+/* ═══ Section Titles ═══ */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  font-weight: var(--fw-bold);
+}
+
+/* ═══ Utility: sr-only ═══ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
