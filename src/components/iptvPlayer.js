@@ -447,8 +447,28 @@ export function attachIptvEvents() {
       hlsInstance = null;
     }
 
+    const isNative = Capacitor.isNativePlatform();
+
     if (window.Hls && window.Hls.isSupported()) {
-      hlsInstance = new window.Hls();
+      const hlsConfig = {};
+      
+      // In browser (not APK), use a CORS proxy for HLS segment requests
+      if (!isNative) {
+        hlsConfig.xhrSetup = function(xhr, url) {
+          // Only proxy if the URL is cross-origin
+          try {
+            const urlObj = new URL(url);
+            if (urlObj.origin !== window.location.origin) {
+              const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+              xhr.open('GET', proxyUrl, true);
+            }
+          } catch(e) {
+            // If URL parsing fails, just continue normally
+          }
+        };
+      }
+
+      hlsInstance = new window.Hls(hlsConfig);
       hlsInstance.loadSource(streamUrl);
       hlsInstance.attachMedia(video);
       hlsInstance.on(window.Hls.Events.MANIFEST_PARSED, function() {
@@ -459,7 +479,11 @@ export function attachIptvEvents() {
           switch (data.type) {
             case window.Hls.ErrorTypes.NETWORK_ERROR:
               console.error("fatal network error encountered, try to recover");
-              errorMsg.textContent = "Error de red al intentar reproducir el canal. (Posible bloqueo CORS)";
+              if (!isNative) {
+                errorMsg.textContent = "Error de red. Algunos canales privados solo funcionan en la APK.";
+              } else {
+                errorMsg.textContent = "Error de red al intentar reproducir el canal.";
+              }
               errorMsg.style.display = 'block';
               hlsInstance.startLoad();
               break;
