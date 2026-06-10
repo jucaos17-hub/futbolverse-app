@@ -450,29 +450,43 @@ export function attachIptvEvents() {
 
     const isNative = Capacitor.isNativePlatform();
 
-    if (window.Hls && window.Hls.isSupported()) {
+    // Use native playback for APK (bypasses CORS), and HLS.js for Web
+    if (isNative) {
+      // For Android/iOS, the native video player handles HLS natively and ignores CORS
+      video.src = streamUrl;
+      video.addEventListener('loadedmetadata', function() {
+        video.play().catch(e => {
+          console.error("Native play failed", e);
+          errorMsg.textContent = "Error al reproducir. El formato del video podría no ser soportado nativamente.";
+          errorMsg.style.display = 'block';
+        });
+      });
+      video.addEventListener('error', function(e) {
+        console.error("Native video error", e);
+        errorMsg.textContent = "Error de red o formato inválido al intentar reproducir el canal.";
+        errorMsg.style.display = 'block';
+      });
+    } else if (window.Hls && window.Hls.isSupported()) {
       const hlsConfig = {};
       
-      // In browser (not APK), use a CORS proxy for HLS requests
-      if (!isNative) {
-        const corsProxies = [
-          (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-          (u) => 'https://corsproxy.io/?' + encodeURIComponent(u),
-        ];
-        let proxyIndex = 0;
+      // In browser, use a CORS proxy for HLS requests
+      const corsProxies = [
+        (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+        (u) => 'https://corsproxy.io/?' + encodeURIComponent(u),
+      ];
+      let proxyIndex = 0;
 
-        hlsConfig.xhrSetup = function(xhr, url) {
-          try {
-            const urlObj = new URL(url);
-            if (urlObj.origin !== window.location.origin) {
-              const proxyUrl = corsProxies[proxyIndex % corsProxies.length](url);
-              xhr.open('GET', proxyUrl, true);
-            }
-          } catch(e) {
-            // If URL parsing fails, just continue normally
+      hlsConfig.xhrSetup = function(xhr, url) {
+        try {
+          const urlObj = new URL(url);
+          if (urlObj.origin !== window.location.origin) {
+            const proxyUrl = corsProxies[proxyIndex % corsProxies.length](url);
+            xhr.open('GET', proxyUrl, true);
           }
-        };
-      }
+        } catch(e) {
+          // If URL parsing fails, just continue normally
+        }
+      };
 
       hlsInstance = new window.Hls(hlsConfig);
       hlsInstance.loadSource(streamUrl);
