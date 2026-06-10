@@ -3,6 +3,12 @@
   "updated": "2026-06-09",
   "categories": [
     {
+      "name": "🔒 Mis Listas Privadas",
+      "playlists": [
+        { "name": "⭐ IPTV JUAN (IPTVMaster)", "url": "http://soporte-visual2.com:8080", "user": "espanistv", "pass": "mJJ3rwfgdYuV" }
+      ]
+    },
+    {
       "name": "📺 TV en Vivo",
       "playlists": [
         { "name": "🌎 Latinoamérica (Todos los canales)", "url": "https://tecnotv.club/jbvk/lista1.m3u", "user": "", "pass": "" }
