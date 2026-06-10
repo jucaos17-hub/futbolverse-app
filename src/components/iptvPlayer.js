@@ -447,16 +447,7 @@ export function attachIptvEvents() {
       hlsInstance = null;
     }
 
-    const isNativeApp = () => Capacitor.isNativePlatform();
-
-    if (isNativeApp()) {
-      // In Capacitor Native, use Android MediaPlayer which bypasses CORS entirely for video
-      video.src = streamUrl;
-      video.play().catch(err => {
-        errorMsg.textContent = 'Error de reproducción nativa: ' + err.message;
-        errorMsg.style.display = 'block';
-      });
-    } else if (window.Hls && window.Hls.isSupported()) {
+    if (window.Hls && window.Hls.isSupported()) {
       hlsInstance = new window.Hls();
       hlsInstance.loadSource(streamUrl);
       hlsInstance.attachMedia(video);

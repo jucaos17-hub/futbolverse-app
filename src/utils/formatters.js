@@ -2,7 +2,9 @@ import { STATUS_LABELS, LIVE_STATUSES, FINISHED_STATUSES } from './constants.js'
 
 /** Format a date string to local Spanish format */
 export function formatDate(dateStr) {
-  const date = new Date(dateStr);
+  // Append T12:00:00 to YYYY-MM-DD to prevent timezone offset shifting the date backwards
+  const safeStr = dateStr.includes('T') ? dateStr : dateStr + 'T12:00:00';
+  const date = new Date(safeStr);
   return date.toLocaleDateString('es-ES', {
     weekday: 'long',
     year: 'numeric',

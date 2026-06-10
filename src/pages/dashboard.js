@@ -122,54 +122,102 @@ export async function renderDashboard(container) {
     });
   }
 
-  function renderNewsSection(container) {
-    // We add a mock news section since the API doesn't provide news
-    const newsHtml = `
+  async function renderNewsSection(container) {
+    container.innerHTML = `
       <div class="news-section anim-fade-up" style="margin-bottom: var(--sp-xl);">
         <h2 style="font-size: var(--fs-lg); margin-bottom: var(--sp-md); display: flex; align-items: center; gap: 8px;">
-          📰 Noticias Destacadas
+          📰 Noticias y Resultados Recientes
         </h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--sp-md);">
-          
-          <div class="news-card" style="background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; transition: transform 0.2s;">
-            <div style="height: 140px; background: url('https://images.unsplash.com/photo-1518605368461-1e1e38ce8058?auto=format&fit=crop&w=600&q=80') center/cover;"></div>
-            <div style="padding: var(--sp-md);">
-              <span style="font-size: var(--fs-xs); color: var(--clr-primary-light); font-weight: 600;">Copa Mundial 2026</span>
-              <h4 style="font-size: var(--fs-md); margin: 8px 0;">Todo listo para la inauguración en el Estadio Azteca</h4>
-              <p style="font-size: var(--fs-sm); color: var(--clr-text-secondary); margin: 0;">México se prepara para recibir el partido inaugural de la Copa del Mundo con una ceremonia histórica.</p>
-            </div>
-          </div>
-
-          <div class="news-card" style="background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; transition: transform 0.2s;">
-            <div style="height: 140px; background: url('https://images.unsplash.com/photo-1551280857-2b9ebf241ac4?auto=format&fit=crop&w=600&q=80') center/cover;"></div>
-            <div style="padding: var(--sp-md);">
-              <span style="font-size: var(--fs-xs); color: var(--clr-primary-light); font-weight: 600;">Champions League</span>
-              <h4 style="font-size: var(--fs-md); margin: 8px 0;">El nuevo formato genera altas expectativas</h4>
-              <p style="font-size: var(--fs-sm); color: var(--clr-text-secondary); margin: 0;">Los equipos se adaptan al nuevo formato de liga que promete más enfrentamientos directos entre potencias.</p>
-            </div>
-          </div>
-
-          <div class="news-card" style="background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; transition: transform 0.2s;">
-            <div style="height: 140px; background: url('https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&w=600&q=80') center/cover;"></div>
-            <div style="padding: var(--sp-md);">
-              <span style="font-size: var(--fs-xs); color: var(--clr-primary-light); font-weight: 600;">Mercado de Fichajes</span>
-              <h4 style="font-size: var(--fs-md); margin: 8px 0;">Movimientos clave en las ligas europeas</h4>
-              <p style="font-size: var(--fs-sm); color: var(--clr-text-secondary); margin: 0;">Resumen de las transferencias más importantes de cara a la nueva temporada en La Liga y Premier League.</p>
-            </div>
-          </div>
-
+        <div id="news-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--sp-md);">
+          <div style="text-align:center; padding: var(--sp-lg); color: var(--clr-text-muted);">Cargando noticias...</div>
         </div>
       </div>
     `;
-    
-    // Append to container
-    container.insertAdjacentHTML('beforeend', newsHtml);
-    
-    // Add simple hover effect
-    container.querySelectorAll('.news-card').forEach(card => {
-      card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-4px)');
-      card.addEventListener('mouseleave', () => card.style.transform = 'translateY(0)');
-    });
+
+    try {
+      // Fetch recent finished matches from the last 3 days
+      const endDate = getToday();
+      const startD = new Date();
+      startD.setDate(startD.getDate() - 3);
+      const startDate = `${startD.getFullYear()}-${String(startD.getMonth()+1).padStart(2,'0')}-${String(startD.getDate()).padStart(2,'0')}`;
+      
+      const { getMatchesByDate } = await import('../services/football.js');
+      const data = await getMatchesByDate(startDate, endDate);
+      const finished = (data.matches || []).filter(m => m.status === 'FINISHED');
+
+      const newsGrid = document.getElementById('news-grid');
+      if (!newsGrid) return;
+
+      if (finished.length === 0) {
+        newsGrid.innerHTML = `
+          <div style="text-align:center; padding: var(--sp-lg); color: var(--clr-text-muted); grid-column: 1 / -1;">
+            No hay resultados recientes. Los partidos finalizados aparecerán aquí automáticamente.
+          </div>
+        `;
+        return;
+      }
+
+      // Pick up to 6 most recent interesting results
+      const newsMatches = finished
+        .sort((a, b) => new Date(b.utcDate) - new Date(a.utcDate))
+        .slice(0, 6);
+
+      const newsCards = newsMatches.map(m => {
+        const home = m.homeTeam;
+        const away = m.awayTeam;
+        const hs = m.score?.fullTime?.home ?? 0;
+        const as = m.score?.fullTime?.away ?? 0;
+        const comp = m.competition?.name || 'Liga';
+        const compEmoji = m.competition?.code === 'WC' ? '🏆' : '⚽';
+        const homeCrest = home.crest || '';
+        const awayCrest = away.crest || '';
+
+        let headline = '';
+        if (hs === as) headline = `¡Empate intenso! ${home.shortName || home.name} ${hs}-${as} ${away.shortName || away.name}`;
+        else if (hs > as) headline = `${home.shortName || home.name} se impone ${hs}-${as} ante ${away.shortName || away.name}`;
+        else headline = `${away.shortName || away.name} vence ${as}-${hs} a ${home.shortName || home.name}`;
+
+        const totalGoals = hs + as;
+        let summary = '';
+        if (totalGoals >= 5) summary = `Lluvia de goles en un emocionante encuentro por ${comp}.`;
+        else if (totalGoals === 0) summary = `Sin goles pero con mucha intensidad en este partido de ${comp}.`;
+        else summary = `Resultado final en el marco de ${comp}.`;
+
+        return `
+          <div class="news-card" style="background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; transition: transform 0.2s;" onclick="window.dispatchEvent(new CustomEvent('navigate', {detail:'/match/${m.id}'}))">
+            <div style="padding: var(--sp-md); display: flex; align-items: center; justify-content: center; gap: var(--sp-md); background: var(--clr-bg-elevated);">
+              ${homeCrest ? `<img src="${homeCrest}" alt="${home.shortName}" style="width:40px;height:40px;object-fit:contain;" onerror="this.style.display='none'" />` : ''}
+              <span style="font-size: var(--fs-lg); font-weight: 700; color: var(--clr-primary-light);">${hs} - ${as}</span>
+              ${awayCrest ? `<img src="${awayCrest}" alt="${away.shortName}" style="width:40px;height:40px;object-fit:contain;" onerror="this.style.display='none'" />` : ''}
+            </div>
+            <div style="padding: var(--sp-md);">
+              <span style="font-size: var(--fs-xs); color: var(--clr-primary-light); font-weight: 600;">${compEmoji} ${comp}</span>
+              <h4 style="font-size: var(--fs-md); margin: 8px 0;">${headline}</h4>
+              <p style="font-size: var(--fs-sm); color: var(--clr-text-secondary); margin: 0;">${summary}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      newsGrid.innerHTML = newsCards;
+
+      // Hover effect
+      newsGrid.querySelectorAll('.news-card').forEach(card => {
+        card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-4px)');
+        card.addEventListener('mouseleave', () => card.style.transform = 'translateY(0)');
+      });
+
+    } catch (err) {
+      console.warn('[News] Could not load news:', err);
+      const newsGrid = document.getElementById('news-grid');
+      if (newsGrid) {
+        newsGrid.innerHTML = `
+          <div style="text-align:center; padding: var(--sp-lg); color: var(--clr-text-muted); grid-column: 1 / -1;">
+            📰 No se pudieron cargar las noticias. Intenta de nuevo más tarde.
+          </div>
+        `;
+      }
+    }
   }
 
   // Initial render

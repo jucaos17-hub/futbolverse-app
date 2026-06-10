@@ -48,14 +48,11 @@ export const POSITION_LABELS = {
 export const PLACEHOLDER_CREST = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="12" fill="%23161B22"/><text x="50" y="58" text-anchor="middle" font-family="sans-serif" font-size="32" fill="%23555">⚽</text></svg>')}`;
 
 // ═══ BROADCASTING / STREAMING INFO ═══
-// Opciones para ver los partidos (Oficiales y Gratuitas)
+// Opciones para ver los partidos (Gratuitas)
 export const BROADCASTERS = {
   WC: {
     name: 'Copa Mundial FIFA 2026',
     channels: [
-      { name: 'DSports / DGO',    url: 'https://www.directvgo.com',    icon: '📺', desc: 'Oficial: Todos los partidos' },
-      { name: 'Caracol TV',        url: 'https://www.noticiascaracol.com/golcaracol/partidos', icon: '🇨🇴', desc: 'Oficial Colombia' },
-      { name: 'RCN',               url: 'https://www.canalrcn.com/deportes/', icon: '🇨🇴', desc: 'Oficial Colombia' },
       { name: 'Fútbol Libre',      url: 'https://librefutboltv.com/',    icon: '🔥', desc: 'Gratis por internet' },
       { name: 'RojaDirecta',       url: 'https://www.rojadirectatv.tv/', icon: '📺', desc: 'Gratis por internet' },
       { name: 'PirloTV',           url: 'https://www.pirlotv.fr/',       icon: '⚽', desc: 'Gratis por internet' },
@@ -63,9 +60,6 @@ export const BROADCASTERS = {
   },
   DEFAULT: {
     channels: [
-      { name: 'ESPN / Disney+',   url: 'https://www.disneyplus.com',   icon: '📺', desc: 'Oficial LATAM' },
-      { name: 'DAZN',             url: 'https://www.dazn.com',         icon: '📺', desc: 'Oficial Europa' },
-      { name: 'DSports / DGO',    url: 'https://www.directvgo.com',    icon: '📺', desc: 'Oficial LATAM' },
       { name: 'Fútbol Libre',      url: 'https://librefutboltv.com/',    icon: '🔥', desc: 'Gratis por internet' },
       { name: 'RojaDirecta',       url: 'https://www.rojadirectatv.tv/', icon: '📺', desc: 'Gratis por internet' },
       { name: 'PirloTV',           url: 'https://www.pirlotv.fr/',       icon: '⚽', desc: 'Gratis por internet' },
