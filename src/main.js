@@ -9,6 +9,20 @@ import { renderScorersPage } from './pages/scorers.js';
 import { renderTeamPage } from './pages/team.js';
 import { renderIptvPage } from './pages/iptvPage.js';
 import { clearExpiredCache } from './services/cache.js';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
+
+// Global listener to open external links using Capacitor Browser when in native app
+document.addEventListener('click', async (e) => {
+  const link = e.target.closest('a');
+  if (link && link.href && link.target === '_blank') {
+    const isNativeApp = Capacitor.isNativePlatform();
+    if (isNativeApp) {
+      e.preventDefault();
+      await Browser.open({ url: link.href });
+    }
+  }
+});
 
 // Initialize header
 const headerEl = document.getElementById('main-header');

@@ -1,4 +1,4 @@
-import { CapacitorHttp } from '@capacitor/core';
+import { CapacitorHttp, Capacitor } from '@capacitor/core';
 
 /**
  * Fetches and parses an M3U playlist file from a given URL.
@@ -7,7 +7,7 @@ import { CapacitorHttp } from '@capacitor/core';
  * @returns {Promise<Array>} List of channel objects { name, logo, group, url }
  */
 export async function fetchAndParseM3U(url) {
-  const isNativeApp = () => typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNative;
+  const isNativeApp = () => Capacitor.isNativePlatform();
   let text = '';
 
   try {

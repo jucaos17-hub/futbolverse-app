@@ -1,8 +1,8 @@
-import { CapacitorHttp } from '@capacitor/core';
+import { CapacitorHttp, Capacitor } from '@capacitor/core';
 
 const API_KEY = 'f93a91526c234116b729d653cb461953';
 
-const isNativeApp = () => typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNative;
+const isNativeApp = () => Capacitor.isNativePlatform();
 const getBaseUrl = () => isNativeApp()
   ? 'https://api.football-data.org/v4'
   : '/api/v4';

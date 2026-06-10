@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { fetchAndParseM3U } from '../services/iptv.js';
 
 export function renderIptvPlayer() {
@@ -446,7 +447,7 @@ export function attachIptvEvents() {
       hlsInstance = null;
     }
 
-    const isNativeApp = () => typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNative;
+    const isNativeApp = () => Capacitor.isNativePlatform();
 
     if (isNativeApp()) {
       // In Capacitor Native, use Android MediaPlayer which bypasses CORS entirely for video
