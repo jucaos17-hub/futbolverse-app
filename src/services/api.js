@@ -1,8 +1,9 @@
+import { CapacitorHttp } from '@capacitor/core';
+
 const API_KEY = 'f93a91526c234116b729d653cb461953';
 
-// En desarrollo (Vite dev server) usa proxy relativo; en producción/APK usa URL absoluta
-const isNativeApp = typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNative;
-const BASE_URL = isNativeApp
+const isNativeApp = () => typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNative;
+const getBaseUrl = () => isNativeApp()
   ? 'https://api.football-data.org/v4'
   : '/api/v4';
 
@@ -16,25 +17,36 @@ async function processQueue() {
   while (requestQueue.length > 0) {
     const { url, resolve, reject } = requestQueue.shift();
     try {
-      const response = await fetch(url, {
-        headers: {
-          'X-Auth-Token': API_KEY,
-        },
-      });
+      let status;
+      let data;
 
-      if (response.status === 429) {
-        // Rate limited — wait and retry
+      if (isNativeApp()) {
+        const response = await CapacitorHttp.get({
+          url: url,
+          headers: { 'X-Auth-Token': API_KEY }
+        });
+        status = response.status;
+        data = response.data;
+      } else {
+        const response = await fetch(url, {
+          headers: { 'X-Auth-Token': API_KEY }
+        });
+        status = response.status;
+        if (!response.ok && status !== 429) {
+          throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        }
+        if (status !== 429) {
+          data = await response.json();
+        }
+      }
+
+      if (status === 429) {
         console.warn('[API] Rate limited, waiting 6s...');
         await new Promise(r => setTimeout(r, 6000));
         requestQueue.unshift({ url, resolve, reject });
         continue;
       }
-
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
+      
       resolve(data);
     } catch (err) {
       reject(err);
@@ -50,7 +62,7 @@ async function processQueue() {
 }
 
 export function apiGet(endpoint) {
-  const url = `${BASE_URL}${endpoint}`;
+  const url = `${getBaseUrl()}${endpoint}`;
   return new Promise((resolve, reject) => {
     requestQueue.push({ url, resolve, reject });
     processQueue();

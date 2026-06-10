@@ -443,9 +443,19 @@ export function attachIptvEvents() {
 
     if (hlsInstance) {
       hlsInstance.destroy();
+      hlsInstance = null;
     }
 
-    if (window.Hls && window.Hls.isSupported()) {
+    const isNativeApp = () => typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNative;
+
+    if (isNativeApp()) {
+      // In Capacitor Native, use Android MediaPlayer which bypasses CORS entirely for video
+      video.src = streamUrl;
+      video.play().catch(err => {
+        errorMsg.textContent = 'Error de reproducción nativa: ' + err.message;
+        errorMsg.style.display = 'block';
+      });
+    } else if (window.Hls && window.Hls.isSupported()) {
       hlsInstance = new window.Hls();
       hlsInstance.loadSource(streamUrl);
       hlsInstance.attachMedia(video);
@@ -471,11 +481,7 @@ export function attachIptvEvents() {
           }
         }
       });
-    }
-    // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
-    // When the browser has built-in HLS support (check using canPlayType), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element through the src property.
-    // This is using the built-in support of the plain video element, without using hls.js.
-    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = streamUrl;
       video.addEventListener('loadedmetadata', function() {
         video.play();

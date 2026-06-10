@@ -1,3 +1,5 @@
+import { CapacitorHttp } from '@capacitor/core';
+
 /**
  * Fetches and parses an M3U playlist file from a given URL.
  * Due to CORS, this might fail if the IPTV server doesn't allow cross-origin requests.
@@ -5,19 +7,24 @@
  * @returns {Promise<Array>} List of channel objects { name, logo, group, url }
  */
 export async function fetchAndParseM3U(url) {
-  const isNativeApp = typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNative;
+  const isNativeApp = () => typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNative;
   let text = '';
 
   try {
-    // Intento 1: Fetch directo (funciona siempre en APK nativa, y en web para servidores con CORS abierto)
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Direct fetch failed: ${response.status}`);
+    if (isNativeApp()) {
+      const res = await CapacitorHttp.get({ url });
+      text = res.data;
+    } else {
+      // Intento 1: Fetch directo (funciona en web para servidores con CORS abierto)
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Direct fetch failed: ${response.status}`);
+      }
+      text = await response.text();
     }
-    text = await response.text();
   } catch (err) {
-    // Intento 2: Si falla por CORS en navegador web, usamos proxy (NO se usa en APK nativa)
-    if (isNativeApp) {
+    // Intento 2: Si falla por CORS en navegador web, usamos proxy
+    if (isNativeApp()) {
       throw new Error('No se pudo cargar la lista M3U. Verifica que el enlace sea válido y que tengas conexión a internet.');
     }
     try {
