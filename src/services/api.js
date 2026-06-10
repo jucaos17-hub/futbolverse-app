@@ -1,7 +1,7 @@
 const API_KEY = 'f93a91526c234116b729d653cb461953';
 
 // En desarrollo (Vite dev server) usa proxy relativo; en producción/APK usa URL absoluta
-const isNativeApp = window.location.protocol === 'file:' || window.location.protocol === 'capacitor:';
+const isNativeApp = typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNative;
 const BASE_URL = isNativeApp
   ? 'https://api.football-data.org/v4'
   : '/api/v4';

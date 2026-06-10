@@ -5,7 +5,7 @@
  * @returns {Promise<Array>} List of channel objects { name, logo, group, url }
  */
 export async function fetchAndParseM3U(url) {
-  const isNativeApp = window.location.protocol === 'file:' || window.location.protocol === 'capacitor:';
+  const isNativeApp = typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNative;
   let text = '';
 
   try {
