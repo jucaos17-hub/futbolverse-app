@@ -452,14 +452,19 @@ export function attachIptvEvents() {
     if (window.Hls && window.Hls.isSupported()) {
       const hlsConfig = {};
       
-      // In browser (not APK), use a CORS proxy for HLS segment requests
+      // In browser (not APK), use a CORS proxy for HLS requests
       if (!isNative) {
+        const corsProxies = [
+          (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+          (u) => 'https://corsproxy.io/?' + encodeURIComponent(u),
+        ];
+        let proxyIndex = 0;
+
         hlsConfig.xhrSetup = function(xhr, url) {
-          // Only proxy if the URL is cross-origin
           try {
             const urlObj = new URL(url);
             if (urlObj.origin !== window.location.origin) {
-              const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+              const proxyUrl = corsProxies[proxyIndex % corsProxies.length](url);
               xhr.open('GET', proxyUrl, true);
             }
           } catch(e) {

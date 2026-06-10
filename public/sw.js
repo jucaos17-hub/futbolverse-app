@@ -1,4 +1,4 @@
-const CACHE_NAME = 'futbolverse-cache-v2';
+const CACHE_NAME = 'futbolverse-cache-v3';
 
 const urlsToCache = [
   '/',
@@ -8,6 +8,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Force immediate activation
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {

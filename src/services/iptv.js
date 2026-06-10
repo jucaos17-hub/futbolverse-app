@@ -12,32 +12,36 @@ export async function fetchAndParseM3U(url) {
 
   try {
     if (isNativeApp()) {
+      // APK: Direct native HTTP (no CORS restrictions)
       const res = await CapacitorHttp.get({ url });
       text = res.data;
     } else {
-      // Intento 1: Fetch directo (funciona en web para servidores con CORS abierto)
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Direct fetch failed: ${response.status}`);
+      // Browser: Go directly through CORS proxy (direct fetch always fails for IPTV)
+      const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      ];
+      
+      let loaded = false;
+      for (const proxyUrl of proxies) {
+        try {
+          const response = await fetch(proxyUrl);
+          if (response.ok) {
+            text = await response.text();
+            loaded = true;
+            break;
+          }
+        } catch (e) {
+          continue; // Try next proxy
+        }
       }
-      text = await response.text();
+      
+      if (!loaded) {
+        throw new Error('No se pudo cargar la lista. Los proxies CORS no respondieron.');
+      }
     }
   } catch (err) {
-    // Intento 2: Si falla por CORS en navegador web, usamos proxy
-    if (isNativeApp()) {
-      throw new Error('No se pudo cargar la lista M3U. Verifica que el enlace sea válido y que tengas conexión a internet.');
-    }
-    try {
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-      const proxyResponse = await fetch(proxyUrl);
-      
-      if (!proxyResponse.ok) {
-        throw new Error(`Proxy fetch failed: ${proxyResponse.status}`);
-      }
-      text = await proxyResponse.text();
-    } catch (proxyErr) {
-      throw new Error('No se pudo cargar la lista M3U. Verifica que el enlace sea válido. Si es una lista muy grande o privada, el navegador puede estar bloqueándola.');
-    }
+    throw new Error('No se pudo cargar la lista M3U. ' + (isNativeApp() ? 'Verifica tu conexión a internet.' : 'Algunos canales privados solo funcionan en la APK.'));
   }
 
   try {
