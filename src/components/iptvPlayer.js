@@ -224,6 +224,7 @@ export function attachIptvEvents() {
   const REMOTE_PLAYLISTS_URL = 'https://raw.githubusercontent.com/jucaos17-hub/futbolverse-app/main/remote_playlists.json';
 
   const fallbackPlaylists = [
+    { name: '⭐ IPTV JUAN (IPTVMaster)', url: 'http://soporte-visual2.com:8080', user: 'espanistv', pass: 'mJJ3rwfgdYuV', category: '🔒 Mis Listas Privadas' },
     { name: '🌎 IPTV-Org (Latinoamérica)', url: 'https://iptv-org.github.io/iptv/languages/spa.m3u', user: '', pass: '', category: '📺 TV en Vivo' },
     { name: '⚽ TecnoTV Deportes', url: 'https://tecnotv.club/jbvk/deportes.m3u', user: '', pass: '', category: '⚽ Deportes' },
     { name: '🎬 Películas Públicas', url: 'https://iptv-org.github.io/iptv/categories/movies.m3u', user: '', pass: '', category: '🎬 Películas y Series' }
