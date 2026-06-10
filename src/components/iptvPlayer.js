@@ -220,8 +220,8 @@ export function attachIptvEvents() {
   const savedListsSelect = document.getElementById('iptv-saved-lists');
   const saveListBtn = document.getElementById('iptv-save-list-btn');
 
-  // URL del archivo JSON remoto (cámbiala cuando subas tu JSON a GitHub)
-  const REMOTE_PLAYLISTS_URL = 'https://raw.githubusercontent.com/CAMILO/futbolverse-playlists/main/remote_playlists.json';
+  // URL del archivo JSON remoto
+  const REMOTE_PLAYLISTS_URL = 'https://raw.githubusercontent.com/jucaos17-hub/futbolverse-app/main/remote_playlists.json';
 
   const fallbackPlaylists = [
     { name: '🌎 IPTV-Org (Latinoamérica)', url: 'https://iptv-org.github.io/iptv/languages/spa.m3u', user: '', pass: '', category: '📺 TV en Vivo' },
