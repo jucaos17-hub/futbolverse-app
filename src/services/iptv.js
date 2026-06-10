@@ -98,7 +98,7 @@ export function parseM3U(text) {
   const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
   const channels = [];
   
-  if (lines.length === 0 || !lines[0].startsWith('#EXTM3U')) {
+  if (lines.length === 0 || (!lines[0].startsWith('#EXTM3U') && !lines[0].startsWith('#EXTINF'))) {
     throw new Error('El enlace proporcionado NO es un archivo M3U válido. (Si usas un servicio privado, asegúrate de que el enlace incluya tu usuario, contraseña y el formato m3u, no solo la dirección del servidor).');
   }
 

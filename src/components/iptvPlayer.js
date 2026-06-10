@@ -402,12 +402,13 @@ export function attachIptvEvents() {
     // Construct URL
     let finalUrl = host;
     const isDirectLink = host.toLowerCase().includes('.m3u') || host.toLowerCase().includes('.m3u8');
+    const hasGetPhp = host.toLowerCase().includes('get.php');
     
-    if (user && pass && !isDirectLink) {
+    if (user && pass && !isDirectLink && !hasGetPhp) {
       // Remove trailing slash
       if (host.endsWith('/')) host = host.slice(0, -1);
       finalUrl = `${host}/get.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&type=m3u_plus&output=ts`;
-    } else if (isDirectLink) {
+    } else {
       finalUrl = host;
     }
 
