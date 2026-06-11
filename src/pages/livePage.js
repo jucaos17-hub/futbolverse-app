@@ -14,7 +14,7 @@ export async function renderLivePage(container) {
           <h1 class="page-title" style="display: flex; align-items: center; gap: 8px;">
             <span style="color: #ff3366; animation: pulse 2s infinite;">🔴</span> En Vivo
           </h1>
-          <p class="page-subtitle">Transmisiones en tiempo real, múltiples servidores (TDTChannels)</p>
+          <p class="page-subtitle">Transmisiones de deportes en vivo y canales Premium en tiempo real</p>
         </div>
       </div>
 
@@ -114,7 +114,7 @@ export async function renderLivePage(container) {
       <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: var(--clr-text-muted);">
         <div style="font-size: 3rem; margin-bottom: 1rem;">📡</div>
         <h3>No hay transmisiones disponibles</h3>
-        <p>No se pudo conectar con el servidor de TDTChannels o la lista está vacía.</p>
+        <p>No se pudo conectar con el servidor de reproducción o la lista de deportes está vacía.</p>
       </div>
     `;
     filtersContainer.innerHTML = '';
@@ -149,8 +149,8 @@ export async function renderLivePage(container) {
     if (activeCategory !== 'Todos') {
       filtered = channels.filter(c => c.category === activeCategory);
     } else {
-      // If "Todos", maybe limit to first 50 to avoid massive loading of images
-      filtered = channels.slice(0, 50);
+      // Mostrar hasta 150 canales para no omitir transmisiones de deportes
+      filtered = channels.slice(0, 150);
     }
 
     if (filtered.length === 0) {

@@ -1,24 +1,84 @@
+import { Capacitor } from '@capacitor/core';
+
+async function fetchText(url) {
+  const isNative = Capacitor.isNativePlatform();
+  if (isNative) {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return await response.text();
+  } else {
+    const proxies = [
+      (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+      (u) => 'https://corsproxy.io/?' + encodeURIComponent(u),
+    ];
+    for (const getProxyUrl of proxies) {
+      try {
+        const proxyUrl = getProxyUrl(url);
+        const response = await fetch(proxyUrl);
+        if (response.ok) {
+          return await response.text();
+        }
+      } catch (err) {
+        // continue to next proxy
+      }
+    }
+    // Try direct fetch as last resort
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return await response.text();
+  }
+}
+
+async function fetchJson(url) {
+  const text = await fetchText(url);
+  return JSON.parse(text);
+}
+
 export async function fetchLiveChannels() {
-  const urls = [
-    { url: 'https://www.tdtchannels.com/lists/tv.m3u8', defaultGroup: 'General' },
-    { url: 'https://iptv-org.github.io/iptv/categories/sports.m3u', defaultGroup: 'Deportes Global' }
+  const REMOTE_PLAYLISTS_URL = 'https://raw.githubusercontent.com/jucaos17-hub/futbolverse-app/main/remote_playlists.json';
+  const fallbackUrls = [
+    { url: 'https://tecnotv.club/jbvk/deportes.m3u', name: 'Deportes' }
   ];
 
+  let sportsPlaylists = [];
+
   try {
-    const promises = urls.map(async (src) => {
+    const data = await fetchJson(REMOTE_PLAYLISTS_URL + '?t=' + Date.now());
+    if (data && data.categories) {
+      data.categories.forEach(cat => {
+        const nameLower = (cat.name || '').toLowerCase();
+        if (nameLower.includes('deportes') || nameLower.includes('sports')) {
+          if (cat.playlists && cat.playlists.length > 0) {
+            cat.playlists.forEach(pl => {
+              sportsPlaylists.push({
+                url: pl.url,
+                name: pl.name || 'Deportes'
+              });
+            });
+          }
+        }
+      });
+    }
+  } catch (err) {
+    console.warn('[LiveAggregator] No se pudo cargar remote_playlists.json, usando fallback:', err);
+  }
+
+  if (sportsPlaylists.length === 0) {
+    sportsPlaylists = fallbackUrls;
+  }
+
+  try {
+    const promises = sportsPlaylists.map(async (src) => {
       try {
-        const response = await fetch(src.url);
-        if (!response.ok) throw new Error('Error HTTP');
-        const data = await response.text();
-        return parseM3U(data, src.defaultGroup);
+        const data = await fetchText(src.url);
+        return parseM3U(data, src.name);
       } catch (err) {
-        console.warn('Error cargando lista:', src.url, err);
+        console.warn('Error cargando lista de deportes:', src.url, err);
         return [];
       }
     });
 
     const results = await Promise.all(promises);
-    // Unir todos los canales en un solo arreglo
     return results.flat();
   } catch (error) {
     console.error('Error fetching live channels:', error);
@@ -26,7 +86,7 @@ export async function fetchLiveChannels() {
   }
 }
 
-function parseM3U(content, defaultGroup = 'General') {
+function parseM3U(content, defaultGroup = 'Deportes') {
   const lines = content.split('\n');
   const channels = [];
   let currentChannel = {};
