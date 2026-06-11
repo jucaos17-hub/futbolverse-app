@@ -5,7 +5,7 @@
     {
       "name": "📺 TV en Vivo",
       "playlists": [
-        { "name": "🌎 tv (Todos los canales)", "url": "https://tecnotv.club/xm4p/lista1.m3u", "user": "", "pass": "" }
+        { "name": "🌎 tv (Todos los canales)", "url": "https://tecnotv.club/xm4p/lista.m3u", "user": "", "pass": "" }
       ]
     },
     {
@@ -17,7 +17,7 @@
     {
       "name": "🎬 Películas y Series",
       "playlists": [
-        { "name": "Peliculas", "url": "https://tecnotv.club/jbvk/peliculas.m3u", "user": "", "pass": "" }
+        { "name": "Peliculas", "url": "https://tecnotv.club/xm4p/peliculas.m3u", "user": "", "pass": "" }
       ]
     }
   ]
