@@ -12,9 +12,13 @@ import { renderLivePage } from './pages/livePage.js';
 import { clearExpiredCache } from './services/cache.js';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
+import { showMatchDetails } from './components/matchDetailsModal.js';
+import { openMatchStreamSelector } from './components/streamSelectorModal.js';
 
 // Export navigateTo globally for onclick handlers
 window.navigateTo = navigateTo;
+window.openMatchDetails = showMatchDetails;
+window.openMatchStreamSelector = openMatchStreamSelector;
 
 // Global function to play internal IPTV stream
 window.playInternalStream = (streamUrl) => {

@@ -1,11 +1,9 @@
 import { CapacitorHttp, Capacitor } from '@capacitor/core';
 
-const API_KEY = 'f93a91526c234116b729d653cb461953';
+const API_KEY = '424de991fdb838cff4cd35bc2f0dea94';
 
 const isNativeApp = () => Capacitor.isNativePlatform();
-const getBaseUrl = () => isNativeApp()
-  ? 'https://api.football-data.org/v4'
-  : '/api/v4';
+const getBaseUrl = () => 'https://v3.football.api-sports.io';
 
 let requestQueue = [];
 let isProcessing = false;
@@ -23,13 +21,13 @@ async function processQueue() {
       if (isNativeApp()) {
         const response = await CapacitorHttp.get({
           url: url,
-          headers: { 'X-Auth-Token': API_KEY }
+          headers: { 'x-apisports-key': API_KEY }
         });
         status = response.status;
         data = response.data;
       } else {
         const response = await fetch(url, {
-          headers: { 'X-Auth-Token': API_KEY }
+          headers: { 'x-apisports-key': API_KEY }
         });
         status = response.status;
         if (!response.ok && status !== 429) {

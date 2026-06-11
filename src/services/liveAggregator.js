@@ -37,7 +37,7 @@ async function fetchJson(url) {
 export async function fetchLiveChannels() {
   const REMOTE_PLAYLISTS_URL = 'https://raw.githubusercontent.com/jucaos17-hub/futbolverse-app/main/remote_playlists.json';
   const fallbackUrls = [
-    { url: 'https://tecnotv.club/jbvk/deportes.m3u', name: 'Deportes' }
+    { url: 'https://tecnotv.club/xm4p/deportes.m3u', name: 'Deportes' }
   ];
 
   let sportsPlaylists = [];
