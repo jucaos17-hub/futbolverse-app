@@ -9,6 +9,10 @@ export function renderHeader(container) {
           <span class="header__logo-text">FútbolVerse</span>
         </div>
         <nav class="header__nav" id="header-nav">
+          <a class="nav-link" data-href="#/live" id="nav-live" style="color: #ff3366; font-weight: 800;">
+            <span class="nav-link__icon" style="animation: pulse 2s infinite;">🔴</span>
+            <span>En Vivo</span>
+          </a>
           <a class="nav-link active" data-href="#/" id="nav-dashboard">
             <span class="nav-link__icon">🏠</span>
             <span>Partidos</span>

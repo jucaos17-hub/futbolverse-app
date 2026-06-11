@@ -8,6 +8,7 @@ import { renderMatchDetail } from './pages/matchDetail.js';
 import { renderScorersPage } from './pages/scorers.js';
 import { renderTeamPage } from './pages/team.js';
 import { renderIptvPage } from './pages/iptvPage.js';
+import { renderLivePage } from './pages/livePage.js';
 import { clearExpiredCache } from './services/cache.js';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
@@ -49,6 +50,7 @@ registerRoute('/scorers', (container) => renderScorersPage(container, { code: 'P
 registerRoute('/scorers/:code', renderScorersPage);
 registerRoute('/team/:id', renderTeamPage);
 registerRoute('/iptv', renderIptvPage);
+registerRoute('/live', renderLivePage);
 
 // Start router
 initRouter();
