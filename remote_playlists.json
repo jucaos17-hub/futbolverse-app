@@ -5,13 +5,13 @@
     {
       "name": "📺 TV en Vivo",
       "playlists": [
-        { "name": "🌎 Latinoamérica (Todos los canales)", "url": "https://tecnotv.club/jbvk/lista1.m3u", "user": "", "pass": "" }
+        { "name": "🌎 tv (Todos los canales)", "url": "https://iptv-org.github.io/iptv/index.m3u", "user": "", "pass": "" }
       ]
     },
     {
       "name": "⚽ Deportes",
       "playlists": [
-        { "name": "⚽ TecnoTV Deportes", "url": "https://tecnotv.club/jbvk/deportes.m3u", "user": "", "pass": "" }
+        { "name": "⚽ TecnoTV Deportes", "url": "https://iptv-org.github.io/iptv/categories/sports.m3u", "user": "", "pass": "" }
       ]
     },
     {
