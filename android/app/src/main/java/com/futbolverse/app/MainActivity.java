@@ -4,7 +4,7 @@ import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         if (bridge != null && bridge.getWebView() != null) {
             bridge.getWebView().onResume();
