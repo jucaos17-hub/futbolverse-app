@@ -1,0 +1,41 @@
+name: Actualizar Listas IPTV Diariamente
+
+on:
+  schedule:
+    # Se ejecuta a las 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22 UTC
+    - cron: '0 */2 * * *'
+  workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub
+
+jobs:
+  update-playlists:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clonar el repositorio
+      uses: actions/checkout@v3
+
+    - name: Configurar Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Instalar dependencias del script
+      working-directory: ./scripts
+      run: npm install
+
+    - name: Ejecutar script de validación y extracción
+      run: node scripts/update_playlists.js
+
+    - name: Verificar cambios
+      id: verify_diff
+      run: |
+        git diff --exit-code || echo "has_changes=true" >> $GITHUB_OUTPUT
+
+    - name: Hacer commit y push si hay cambios
+      if: steps.verify_diff.outputs.has_changes == 'true'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add remote_playlists.json
+        git commit -m "Auto-actualización de listas IPTV (GitHub Action)"
+        git push

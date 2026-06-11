@@ -5,19 +5,34 @@
     {
       "name": "📺 TV en Vivo",
       "playlists": [
-        { "name": "🌎 tv (Todos los canales)", "url": "https://tecnotv.club/xm4p/lista.m3u", "user": "", "pass": "" }
+        {
+          "name": "🌎 TV (Todos los canales)",
+          "url": "https://tecnotv.club/xm4p/lista.m3u",
+          "user": "",
+          "pass": ""
+        }
       ]
     },
     {
       "name": "⚽ Deportes",
       "playlists": [
-        { "name": "⚽ TecnoTV Deportes", "url": "https://tecnotv.club/xm4p/deportes.m3u", "user": "", "pass": "" }
+        {
+          "name": "⚽ TecnoTV Deportes",
+          "url": "https://tecnotv.club/xm4p/deportes.m3u",
+          "user": "",
+          "pass": ""
+        }
       ]
     },
     {
       "name": "🎬 Películas y Series",
       "playlists": [
-        { "name": "Peliculas", "url": "https://tecnotv.club/xm4p/peliculas.m3u", "user": "", "pass": "" }
+        {
+          "name": "🎬 Peliculas",
+          "url": "https://tecnotv.club/xm4p/peliculas.m3u",
+          "user": "",
+          "pass": ""
+        }
       ]
     }
   ]
