@@ -1,17 +1,32 @@
 export async function fetchLiveChannels() {
-  const url = 'https://www.tdtchannels.com/lists/tv.m3u8';
+  const urls = [
+    { url: 'https://www.tdtchannels.com/lists/tv.m3u8', defaultGroup: 'General' },
+    { url: 'https://iptv-org.github.io/iptv/categories/sports.m3u', defaultGroup: 'Deportes Global' }
+  ];
+
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Error al cargar TDTChannels');
-    const data = await response.text();
-    return parseM3U(data);
+    const promises = urls.map(async (src) => {
+      try {
+        const response = await fetch(src.url);
+        if (!response.ok) throw new Error('Error HTTP');
+        const data = await response.text();
+        return parseM3U(data, src.defaultGroup);
+      } catch (err) {
+        console.warn('Error cargando lista:', src.url, err);
+        return [];
+      }
+    });
+
+    const results = await Promise.all(promises);
+    // Unir todos los canales en un solo arreglo
+    return results.flat();
   } catch (error) {
     console.error('Error fetching live channels:', error);
     return [];
   }
 }
 
-function parseM3U(content) {
+function parseM3U(content, defaultGroup = 'General') {
   const lines = content.split('\n');
   const channels = [];
   let currentChannel = {};
@@ -26,7 +41,7 @@ function parseM3U(content) {
       
       const id = tvgIdMatch ? tvgIdMatch[1] : '';
       const logo = tvgLogoMatch ? tvgLogoMatch[1] : '';
-      const group = groupTitleMatch ? groupTitleMatch[1] : 'General';
+      const group = (groupTitleMatch && groupTitleMatch[1]) ? groupTitleMatch[1] : defaultGroup;
       
       // Extract name (everything after the last comma)
       const commaIndex = line.lastIndexOf(',');

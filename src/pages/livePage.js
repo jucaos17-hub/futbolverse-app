@@ -239,13 +239,21 @@ export async function renderLivePage(container) {
         showError("Error de red o formato inválido (Native).");
       });
     } else if (window.Hls && window.Hls.isSupported()) {
+      
+      const corsProxies = [
+        (u) => 'https://corsproxy.io/?' + encodeURIComponent(u),
+        (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+      ];
+      let proxyIndex = 0;
+
       const hlsConfig = {
         xhrSetup: function(xhr, url) {
           try {
             const urlObj = new URL(url);
             if (urlObj.origin !== window.location.origin) {
-              // TDTChannels usually has CORS enabled for most streams, 
-              // but if not, fallback to a proxy can be done here.
+              // Aplicar proxy para evitar error de CORS en el navegador
+              const proxyUrl = corsProxies[proxyIndex % corsProxies.length](url);
+              xhr.open('GET', proxyUrl, true);
             }
           } catch(e) {}
         }
@@ -261,8 +269,8 @@ export async function renderLivePage(container) {
         if (data.fatal) {
           switch (data.type) {
             case window.Hls.ErrorTypes.NETWORK_ERROR:
-              showError("Error de red. El canal podría estar caído o bloquear CORS.");
               currentHlsInstance.destroy();
+              showError("Error de Red (CORS). El navegador bloquea el video. Instala una extensión 'Allow CORS' para probar en PC, o prueba la app directamente en Android/iOS.");
               break;
             case window.Hls.ErrorTypes.MEDIA_ERROR:
               currentHlsInstance.recoverMediaError();
