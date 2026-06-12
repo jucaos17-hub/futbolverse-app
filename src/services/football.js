@@ -22,14 +22,36 @@ export async function getCompetition(code) {
 
 /** Get today's matches across all competitions */
 export async function getMatchesByDate(dateFrom, dateTo) {
-  // Football-Data.org dateTo is exclusive (e.g., dateTo=2026-06-12 means strictly before 2026-06-12 00:00:00)
-  // We must add 1 day to dateTo to include the selected date's matches.
-  const toDate = new Date(dateTo);
-  toDate.setDate(toDate.getDate() + 1);
-  const nextDay = toDate.toISOString().split('T')[0];
+  // Because the API filters using UTC dates, matches late at night in Bogota 
+  // might fall on the next day in UTC. To fix this, we query a wider range 
+  // (-1 day to +2 days) and then filter locally exactly for the requested range in Bogota time.
+  const fromDate = new Date(dateFrom);
+  fromDate.setDate(fromDate.getDate() - 1);
+  const apiFrom = fromDate.toISOString().split('T')[0];
 
-  const key = `matches_${dateFrom}_${nextDay}`;
-  return cachedFetch(key, `/matches?dateFrom=${dateFrom}&dateTo=${nextDay}`, 'matches');
+  const toDate = new Date(dateTo);
+  toDate.setDate(toDate.getDate() + 2);
+  const apiTo = toDate.toISOString().split('T')[0];
+
+  const key = `matches_wide_${apiFrom}_${apiTo}`;
+  const data = await cachedFetch(key, `/matches?dateFrom=${apiFrom}&dateTo=${apiTo}`, 'matches');
+  
+  if (!data || !data.matches) return data;
+
+  // Helper to get strictly local YYYY-MM-DD in Bogota timezone
+  const formatBogotaDate = (utcStr) => {
+    const d = new Date(utcStr);
+    const options = { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Intl.DateTimeFormat('en-CA', options).format(d);
+  };
+
+  // Filter matches so they exactly match the requested local date boundary
+  const filteredMatches = data.matches.filter(match => {
+    const localDateStr = formatBogotaDate(match.utcDate);
+    return localDateStr >= dateFrom && localDateStr <= dateTo;
+  });
+
+  return { ...data, matches: filteredMatches };
 }
 
 /** Get matches for a specific competition */
