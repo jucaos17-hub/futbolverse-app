@@ -31,6 +31,11 @@ async function processQueue() {
         } catch (e) {
           data = textData;
         }
+        
+        // INTERCEPTAR ERRORES SILENCIOSOS DE LA API DE FÚTBOL
+        if (data && data.errors && typeof data.errors === 'object' && Object.keys(data.errors).length > 0) {
+          window.alert(`EL SERVIDOR DE FÚTBOL RESPONDIÓ CON ERROR: ${JSON.stringify(data.errors)}`);
+        }
       }
 
       if (status === 429) {
