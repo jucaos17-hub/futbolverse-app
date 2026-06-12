@@ -1,4 +1,4 @@
-package com.futbolverse.app;
+package com.jucaos17.futbolverse;
 
 import com.getcapacitor.BridgeActivity;
 
