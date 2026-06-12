@@ -538,25 +538,6 @@ export function attachIptvEvents() {
     } else if (window.Hls && window.Hls.isSupported()) {
       const hlsConfig = {};
       
-      // In browser, use a CORS proxy for HLS requests
-      const corsProxies = [
-        (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-        (u) => 'https://corsproxy.io/?' + encodeURIComponent(u),
-      ];
-      let proxyIndex = 0;
-
-      hlsConfig.xhrSetup = function(xhr, url) {
-        try {
-          const urlObj = new URL(url);
-          if (urlObj.origin !== window.location.origin) {
-            const proxyUrl = corsProxies[proxyIndex % corsProxies.length](url);
-            xhr.open('GET', proxyUrl, true);
-          }
-        } catch(e) {
-          // If URL parsing fails, just continue normally
-        }
-      };
-
       hlsInstance = new window.Hls(hlsConfig);
       hlsInstance.loadSource(streamUrl);
       hlsInstance.attachMedia(video);

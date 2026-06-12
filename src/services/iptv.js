@@ -16,23 +16,36 @@ export async function fetchAndParseM3U(url) {
       const res = await CapacitorHttp.get({ url });
       text = res.data;
     } else {
-      // Browser: Go directly through CORS proxy (direct fetch always fails for IPTV)
-      const proxies = [
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-        `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      ];
-      
+      // Browser: Try direct fetch first (works for public lists like iptv-org that support CORS)
       let loaded = false;
-      for (const proxyUrl of proxies) {
-        try {
-          const response = await fetch(proxyUrl);
-          if (response.ok) {
-            text = await response.text();
-            loaded = true;
-            break;
+      try {
+        const directRes = await fetch(url);
+        if (directRes.ok) {
+          text = await directRes.text();
+          loaded = true;
+        }
+      } catch (e) {
+        // Direct fetch failed (likely CORS), fallback to proxy
+      }
+
+      if (!loaded) {
+        // Fallback to CORS proxies
+        const proxies = [
+          `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+          `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        ];
+        
+        for (const proxyUrl of proxies) {
+          try {
+            const response = await fetch(proxyUrl);
+            if (response.ok) {
+              text = await response.text();
+              loaded = true;
+              break;
+            }
+          } catch (e) {
+            continue; // Try next proxy
           }
-        } catch (e) {
-          continue; // Try next proxy
         }
       }
       
