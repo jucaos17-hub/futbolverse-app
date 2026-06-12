@@ -34,8 +34,16 @@ export async function renderLivePage(container) {
         ${Array(8).fill('<div class="skeleton" style="height: 200px; border-radius: var(--radius-lg);"></div>').join('')}
       </div>
 
-      <!-- Floating Modal Player (Hidden by default) -->
-      <div id="live-modal-backdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+    </div>
+  `;
+
+  // Inject Modal into document.body to prevent CSS scrolling issues
+  let modalBackdrop = document.getElementById('live-modal-backdrop');
+  if (!modalBackdrop) {
+    modalBackdrop = document.createElement('div');
+    modalBackdrop.id = 'live-modal-backdrop';
+    modalBackdrop.style.cssText = 'display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;';
+    modalBackdrop.innerHTML = `
         <div id="live-modal-content" style="background: var(--clr-surface); width: 100%; max-width: 800px; border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.3s ease;">
           <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--clr-border); background: var(--clr-surface-alt);">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -55,10 +63,9 @@ export async function renderLivePage(container) {
             <button id="live-modal-fullscreen" class="btn btn--secondary" style="font-size: var(--fs-xs); padding: 6px 12px;">⛶ Pantalla Completa</button>
           </div>
         </div>
-      </div>
-
-    </div>
-  `;
+    `;
+    document.body.appendChild(modalBackdrop);
+  }
 
   // Hide scrollbar for filters
   const style = document.createElement('style');
