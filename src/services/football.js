@@ -88,17 +88,16 @@ export async function getCompetition(code) {
 
 export async function getMatchesByDate(dateFrom, dateTo) {
   const fromStr = dateFrom.split('T')[0];
-  const fixtures = await cachedFetch(`matches_${fromStr}`, `/fixtures?date=${fromStr}`, 'matches');
+  const fixtures = await cachedFetch(`matches_${fromStr}`, `/fixtures?date=${fromStr}&timezone=America/Bogota`, 'matches');
   
   return { matches: fixtures.map(mapMatch).filter(m => m != null) };
 }
 
 /** Get matches for a specific competition */
-export async function getCompetitionMatches(code, matchday) {
-  // Requires season. Default to current year, use fallback if needed
+export async function getCompetitionMatches(code) {
   const currentYear = new Date().getFullYear();
   const season = currentYear > 2024 ? 2024 : currentYear;
-  let endpoint = `/fixtures?league=${code}&season=${season}`;
+  let endpoint = `/fixtures?league=${code}&season=${season}&timezone=America/Bogota`;
   // We can't map 'matchday' easily to API-Football rounds without complex round strings, so we fetch next/last 20
   const fixtures = await cachedFetch(`comp_matches_${code}`, endpoint, 'matches');
   
@@ -165,13 +164,13 @@ export async function getTeam(id) {
 export async function getTeamMatches(id, limit = 10) {
   const currentYear = new Date().getFullYear();
   const season = currentYear > 2024 ? 2024 : currentYear;
-  const fixtures = await cachedFetch(`team_matches_${id}`, `/fixtures?team=${id}&season=${season}&last=${limit}`, 'matches');
+  const fixtures = await cachedFetch(`team_matches_${id}`, `/fixtures?team=${id}&season=${season}&last=${limit}&timezone=America/Bogota`, 'matches');
   return { matches: fixtures.map(mapMatch).filter(m => m != null) };
 }
 
 /** Get a specific match details (with lineups, stats, events) */
 export async function getMatch(id) {
-  const fixtures = await cachedFetch(`match_${id}`, `/fixtures?id=${id}`, 'live');
+  const fixtures = await cachedFetch(`match_${id}`, `/fixtures?id=${id}&timezone=America/Bogota`, 'live');
   return mapMatch(fixtures[0]);
 }
 

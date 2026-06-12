@@ -25,10 +25,6 @@ export function renderHeader(container) {
             <span class="nav-link__icon">📊</span>
             <span>Clasificación</span>
           </a>
-          <a class="nav-link" data-href="#/players" id="nav-players">
-            <span class="nav-link__icon">⭐</span>
-            <span>Jugadores</span>
-          </a>
           <a class="nav-link" data-href="#/scorers" id="nav-scorers">
             <span class="nav-link__icon">👟</span>
             <span>Goleadores</span>

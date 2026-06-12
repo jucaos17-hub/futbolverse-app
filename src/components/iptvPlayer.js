@@ -510,11 +510,27 @@ export function attachIptvEvents() {
     }
 
     const pipBtn = document.getElementById('iptv-pip-btn');
-    if (pipBtn && isNative) {
-      pipBtn.style.display = 'block';
-      pipBtn.onclick = () => {
-        PiP.enterPiP().catch(()=>{});
-      };
+    if (pipBtn) {
+      if (isNative) {
+        pipBtn.style.display = 'block';
+        pipBtn.onclick = () => {
+          document.body.classList.add('pip-mode-active');
+          PiP.enterPiP().catch(()=>{});
+        };
+      } else if (document.pictureInPictureEnabled) {
+        pipBtn.style.display = 'block';
+        pipBtn.onclick = async () => {
+          try {
+            if (document.pictureInPictureElement) {
+              await document.exitPictureInPicture();
+            } else if (video) {
+              await video.requestPictureInPicture();
+            }
+          } catch (error) {
+            console.error("PiP Web error:", error);
+          }
+        };
+      }
     }
 
     if (hlsInstance) {
