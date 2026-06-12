@@ -5,7 +5,8 @@ export function formatDate(dateStr) {
   // Append T12:00:00 to YYYY-MM-DD to prevent timezone offset shifting the date backwards
   const safeStr = dateStr.includes('T') ? dateStr : dateStr + 'T12:00:00';
   const date = new Date(safeStr);
-  return date.toLocaleDateString('es-ES', {
+  return date.toLocaleDateString('es-CO', {
+    timeZone: 'America/Bogota',
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -16,7 +17,8 @@ export function formatDate(dateStr) {
 /** Format time from UTC date string to local time */
 export function formatTime(dateStr) {
   const date = new Date(dateStr);
-  return date.toLocaleTimeString('es-ES', {
+  return date.toLocaleTimeString('es-CO', {
+    timeZone: 'America/Bogota',
     hour: '2-digit',
     minute: '2-digit',
   });
@@ -25,7 +27,8 @@ export function formatTime(dateStr) {
 /** Get short date for display */
 export function formatShortDate(dateStr) {
   const date = new Date(dateStr);
-  return date.toLocaleDateString('es-ES', {
+  return date.toLocaleDateString('es-CO', {
+    timeZone: 'America/Bogota',
     day: 'numeric',
     month: 'short',
   });

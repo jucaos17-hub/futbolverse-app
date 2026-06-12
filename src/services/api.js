@@ -1,5 +1,10 @@
-const API_KEY = '892b0189cbed34081c12cb276a12e282';
-const getBaseUrl = () => 'https://v3.football.api-sports.io';
+const API_KEY = 'f93a91526c234116b729d653cb461953';
+
+// En desarrollo (Vite dev server) usa proxy relativo; en producción/APK usa URL absoluta
+const isNativeApp = window.location.protocol === 'file:' || window.location.protocol === 'capacitor:';
+const BASE_URL = isNativeApp
+  ? 'https://api.football-data.org/v4'
+  : '/api/v4';
 
 let requestQueue = [];
 let isProcessing = false;
@@ -12,43 +17,26 @@ async function processQueue() {
     const { url, resolve, reject } = requestQueue.shift();
     try {
       const response = await fetch(url, {
-        headers: { 'x-apisports-key': API_KEY }
+        headers: {
+          'X-Auth-Token': API_KEY,
+        },
       });
-      const status = response.status;
-      
-      if (!response.ok && status !== 429) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-      }
-      
-      let data;
-      if (status !== 429) {
-        // Enforce JSON parsing
-        const textData = await response.text();
-        try {
-          data = JSON.parse(textData);
-        } catch (e) {
-          data = textData;
-        }
-        
-        // INTERCEPTAR ERRORES SILENCIOSOS DE LA API DE FÚTBOL
-        if (data && data.errors && typeof data.errors === 'object' && Object.keys(data.errors).length > 0) {
-          console.warn(`EL SERVIDOR DE FÚTBOL RESPONDIÓ CON ERROR: ${JSON.stringify(data.errors)}`);
-          // Resolve with empty data instead of failing to prevent breaking UI
-          data.response = [];
-        }
-      }
 
-      if (status === 429) {
+      if (response.status === 429) {
+        // Rate limited — wait and retry
         console.warn('[API] Rate limited, waiting 6s...');
         await new Promise(r => setTimeout(r, 6000));
         requestQueue.unshift({ url, resolve, reject });
         continue;
       }
-      
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
       resolve(data);
     } catch (err) {
-      window.alert(`DIAGNÓSTICO DE RED FALLIDA: ${err.message}`);
-      console.error(err);
       reject(err);
     }
 
@@ -62,7 +50,7 @@ async function processQueue() {
 }
 
 export function apiGet(endpoint) {
-  const url = `${getBaseUrl()}${endpoint}`;
+  const url = `${BASE_URL}${endpoint}`;
   return new Promise((resolve, reject) => {
     requestQueue.push({ url, resolve, reject });
     processQueue();
