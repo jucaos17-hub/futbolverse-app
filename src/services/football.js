@@ -91,8 +91,7 @@ export async function getCompetition(code) {
 export async function getMatchesByDate(dateFrom, dateTo) {
   // api-football format YYYY-MM-DD
   const fromStr = dateFrom.split('T')[0];
-  const toStr = dateTo.split('T')[0];
-  const fixtures = await cachedFetch(`matches_${fromStr}_${toStr}`, `/fixtures?from=${fromStr}&to=${toStr}`, 'matches');
+  const fixtures = await cachedFetch(`matches_${fromStr}`, `/fixtures?date=${fromStr}`, 'matches');
   
   return { matches: fixtures.map(mapMatch).filter(m => m != null) };
 }
