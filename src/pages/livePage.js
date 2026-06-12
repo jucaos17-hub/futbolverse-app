@@ -37,35 +37,37 @@ export async function renderLivePage(container) {
     </div>
   `;
 
-  // Inject Modal into document.body to prevent CSS scrolling issues
-  let modalBackdrop = document.getElementById('live-modal-backdrop');
-  if (!modalBackdrop) {
-    modalBackdrop = document.createElement('div');
-    modalBackdrop.id = 'live-modal-backdrop';
-    modalBackdrop.style.cssText = 'display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;';
-    modalBackdrop.innerHTML = `
-        <div id="live-modal-content" style="background: var(--clr-surface); width: 100%; max-width: 800px; border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.3s ease;">
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--clr-border); background: var(--clr-surface-alt);">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="width: 8px; height: 8px; background: #ff3366; border-radius: 50%; animation: pulse 2s infinite;"></span>
-              <h3 id="live-modal-title" style="margin: 0; font-size: var(--fs-md);">Cargando...</h3>
-            </div>
-            <button id="live-modal-close" style="background: transparent; border: none; color: var(--clr-text-muted); font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
-          </div>
-          <div style="position: relative; width: 100%; padding-top: 56.25%; background: #000;">
-            <video id="live-modal-video" controls playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></video>
-            <div id="live-modal-error" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: #ff5555; align-items: center; justify-content: center; text-align: center; padding: 2rem;"></div>
-          </div>
-          <div style="padding: 12px 16px; background: var(--clr-surface-alt); display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-size: var(--fs-sm); color: var(--clr-text-muted);">
-              Servidor: <strong style="color: var(--clr-text);">TDTChannels Premium</strong>
-            </div>
-            <button id="live-modal-fullscreen" class="btn btn--secondary" style="font-size: var(--fs-xs); padding: 6px 12px;">⛶ Pantalla Completa</button>
-          </div>
-        </div>
-    `;
-    document.body.appendChild(modalBackdrop);
+  // Inject Modal into document.body and ensure it's fresh
+  let oldBackdrop = document.getElementById('live-modal-backdrop');
+  if (oldBackdrop) {
+    oldBackdrop.remove();
   }
+
+  const modalBackdrop = document.createElement('div');
+  modalBackdrop.id = 'live-modal-backdrop';
+  modalBackdrop.style.cssText = 'display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;';
+  modalBackdrop.innerHTML = `
+      <div id="live-modal-content" style="background: var(--clr-surface); width: 100%; max-width: 800px; border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.3s ease;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--clr-border); background: var(--clr-surface-alt);">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 8px; height: 8px; background: #ff3366; border-radius: 50%; animation: pulse 2s infinite;"></span>
+            <h3 id="live-modal-title" style="margin: 0; font-size: var(--fs-md);">Cargando...</h3>
+          </div>
+          <button id="live-modal-close" style="background: transparent; border: none; color: var(--clr-text-muted); font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <div style="position: relative; width: 100%; padding-top: 56.25%; background: #000;">
+          <video id="live-modal-video" controls playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></video>
+          <div id="live-modal-error" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: #ff5555; align-items: center; justify-content: center; text-align: center; padding: 2rem;"></div>
+        </div>
+        <div style="padding: 12px 16px; background: var(--clr-surface-alt); display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: var(--fs-sm); color: var(--clr-text-muted);">
+            Servidor: <strong style="color: var(--clr-text);">TDTChannels Premium</strong>
+          </div>
+          <button id="live-modal-fullscreen" class="btn btn--secondary" style="font-size: var(--fs-xs); padding: 6px 12px;">⛶ Pantalla Completa</button>
+        </div>
+      </div>
+  `;
+  document.body.appendChild(modalBackdrop);
 
   // Hide scrollbar for filters
   const style = document.createElement('style');
@@ -229,21 +231,21 @@ export async function renderLivePage(container) {
 
   function playStream(streamUrl) {
     modalError.style.display = 'none';
-    const isNative = Capacitor.isNativePlatform();
 
     if (currentHlsInstance) {
       currentHlsInstance.destroy();
       currentHlsInstance = null;
     }
 
-    if (isNative) {
+    // iOS supports HLS natively, Android WebView does NOT. 
+    // Instead of checking isNative, we check for native HLS support.
+    if (modalVideo.canPlayType('application/vnd.apple.mpegurl')) {
       modalVideo.src = streamUrl;
-      modalVideo.addEventListener('loadedmetadata', () => {
-        modalVideo.play().catch(e => showError("Error nativo al reproducir."));
-      });
-      modalVideo.addEventListener('error', () => {
+      modalVideo.play().catch(e => showError("Error nativo al reproducir."));
+      
+      modalVideo.onerror = () => {
         showError("Error de red o formato inválido (Native).");
-      });
+      };
     } else if (window.Hls && window.Hls.isSupported()) {
       
       const corsProxies = [
@@ -311,6 +313,9 @@ export async function renderLivePage(container) {
     document.body.classList.remove('modal-open');
     if (currentHlsInstance) {
       currentHlsInstance.destroy();
+      currentHlsInstance = null;
     }
+    const existing = document.getElementById('live-modal-backdrop');
+    if (existing) existing.remove();
   };
 }

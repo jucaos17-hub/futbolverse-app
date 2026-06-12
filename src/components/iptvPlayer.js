@@ -521,24 +521,19 @@ export function attachIptvEvents() {
       hlsInstance = null;
     }
 
-    const isNative = Capacitor.isNativePlatform();
-
-    // Use native playback for APK (bypasses CORS), and HLS.js for Web
-    if (isNative) {
-      // For Android/iOS, the native video player handles HLS natively and ignores CORS
+    // Use native playback if supported (iOS/Safari), otherwise Hls.js for Android/Web
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = streamUrl;
-      video.addEventListener('loadedmetadata', function() {
-        video.play().catch(e => {
-          console.error("Native play failed", e);
-          errorMsg.textContent = "Error al reproducir. El formato del video podría no ser soportado nativamente.";
-          errorMsg.style.display = 'block';
-        });
+      video.play().catch(e => {
+        console.error("Native play failed", e);
+        errorMsg.textContent = "Error al reproducir. El formato del video podría no ser soportado nativamente.";
+        errorMsg.style.display = 'block';
       });
-      video.addEventListener('error', function(e) {
+      video.onerror = function(e) {
         console.error("Native video error", e);
         errorMsg.textContent = "Error de red o formato inválido al intentar reproducir el canal.";
         errorMsg.style.display = 'block';
-      });
+      };
     } else if (window.Hls && window.Hls.isSupported()) {
       const hlsConfig = {};
       
