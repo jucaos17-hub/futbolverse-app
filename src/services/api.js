@@ -1,5 +1,3 @@
-import { Capacitor } from '@capacitor/core';
-
 const API_KEY = '424de991fdb838cff4cd35bc2f0dea94';
 const getBaseUrl = () => 'https://v3.football.api-sports.io';
 

@@ -1,5 +1,6 @@
 import { apiGet } from './api.js';
 import { cacheGet, cacheSet } from './cache.js';
+import { getFdMatchesByDate, getFdStandings } from './footballdataApi.js';
 
 async function cachedFetch(key, endpoint, cacheType = 'matches') {
   const cached = cacheGet(key);
@@ -89,7 +90,16 @@ export async function getCompetition(code) {
 
 /** Get today's matches across all competitions */
 export async function getMatchesByDate(dateFrom, dateTo) {
-  // api-football format YYYY-MM-DD
+  // Intentar Footballdata primero para año en curso
+  const currentYear = new Date().getFullYear();
+  if (currentYear > 2024) {
+    const fdData = await getFdMatchesByDate(dateFrom);
+    if (fdData && fdData.matches && fdData.matches.length > 0) {
+      return fdData;
+    }
+  }
+
+  // Fallback a API-Sports
   const fromStr = dateFrom.split('T')[0];
   const fixtures = await cachedFetch(`matches_${fromStr}`, `/fixtures?date=${fromStr}`, 'matches');
   
@@ -98,8 +108,9 @@ export async function getMatchesByDate(dateFrom, dateTo) {
 
 /** Get matches for a specific competition */
 export async function getCompetitionMatches(code, matchday) {
-  // Requires season. Default to current year.
-  const season = 2024;
+  // Requires season. Default to current year, use fallback if needed
+  const currentYear = new Date().getFullYear();
+  const season = currentYear > 2024 ? 2024 : currentYear;
   let endpoint = `/fixtures?league=${code}&season=${season}`;
   // We can't map 'matchday' easily to API-Football rounds without complex round strings, so we fetch next/last 20
   const fixtures = await cachedFetch(`comp_matches_${code}`, endpoint, 'matches');
@@ -109,7 +120,18 @@ export async function getCompetitionMatches(code, matchday) {
 
 /** Get standings for a competition */
 export async function getStandings(code) {
-  const season = 2024;
+  const currentYear = new Date().getFullYear();
+  
+  // Try Footballdata for 2026 data
+  if (currentYear > 2024) {
+    const fdData = await getFdStandings(code);
+    if (fdData && fdData.standings && fdData.standings.length > 0) {
+      return fdData; // Successfully retrieved 2026 data
+    }
+  }
+
+  // Fallback to API-Sports 2024
+  const season = currentYear > 2024 ? 2024 : currentYear;
   const res = await cachedFetch(`standings_${code}`, `/standings?league=${code}&season=${season}`, 'standings');
   if (!res || !res[0] || !res[0].league || !res[0].league.standings) return { standings: [] };
   
@@ -135,7 +157,8 @@ export async function getStandings(code) {
 
 /** Get top scorers for a competition */
 export async function getScorers(code) {
-  const season = 2024;
+  const currentYear = new Date().getFullYear();
+  const season = currentYear > 2024 ? 2024 : currentYear;
   const scorers = await cachedFetch(`scorers_${code}`, `/players/topscorers?league=${code}&season=${season}`, 'scorers');
   
   return {
@@ -164,7 +187,8 @@ export async function getTeam(id) {
 
 /** Get matches for a specific team */
 export async function getTeamMatches(id, limit = 10) {
-  const season = 2024;
+  const currentYear = new Date().getFullYear();
+  const season = currentYear > 2024 ? 2024 : currentYear;
   const fixtures = await cachedFetch(`team_matches_${id}`, `/fixtures?team=${id}&season=${season}&last=${limit}`, 'matches');
   return { matches: fixtures.map(mapMatch).filter(m => m != null) };
 }
@@ -177,7 +201,8 @@ export async function getMatch(id) {
 
 /** Get competition teams */
 export async function getCompetitionTeams(code) {
-  const season = 2024;
+  const currentYear = new Date().getFullYear();
+  const season = currentYear > 2024 ? 2024 : currentYear;
   const teamsRes = await cachedFetch(`comp_teams_${code}`, `/teams?league=${code}&season=${season}`, 'teams');
   return {
     teams: teamsRes.map(t => ({
