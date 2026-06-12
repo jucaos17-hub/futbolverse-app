@@ -15,9 +15,13 @@ import { Capacitor } from '@capacitor/core';
 import { showMatchDetails } from './components/matchDetailsModal.js';
 import { openMatchStreamSelector } from './components/streamSelectorModal.js';
 import { loadSavedTheme, openThemeSelectorModal } from './components/themeManager.js';
+import { initializePushNotifications } from './services/pushManager.js';
 
 // Cargar colores de equipo preferido
 loadSavedTheme();
+
+// Iniciar Motor de Notificaciones Push (Solo en Android Nativo)
+initializePushNotifications();
 
 // Export navigateTo globally for onclick handlers
 window.navigateTo = navigateTo;
