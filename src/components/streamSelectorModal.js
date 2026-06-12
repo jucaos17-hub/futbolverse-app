@@ -51,13 +51,7 @@ export async function openMatchStreamSelector(matchTitle) {
 
   // Fetch channels
   try {
-    const { categories } = await fetchLiveChannels();
-    // Deportes usually is mapped to "Deportes" group or is the main content of deportes.m3u
-    // We'll flat map all channels since liveAggregator is currently only fetching deportes.m3u
-    let allChannels = [];
-    categories.forEach(cat => {
-      allChannels = allChannels.concat(cat.channels);
-    });
+    const allChannels = await fetchLiveChannels();
 
     const listContainer = document.getElementById('ss-channel-list');
     
