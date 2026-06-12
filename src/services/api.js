@@ -42,6 +42,8 @@ async function processQueue() {
       
       resolve(data);
     } catch (err) {
+      window.alert(`DIAGNÓSTICO DE RED FALLIDA: ${err.message}`);
+      console.error(err);
       reject(err);
     }
 
