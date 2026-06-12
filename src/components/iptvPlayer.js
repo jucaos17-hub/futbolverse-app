@@ -89,6 +89,7 @@ export function attachIptvEvents() {
   const video = document.getElementById('iptv-video-player');
   const placeholder = document.getElementById('iptv-overlay') || document.getElementById('iptv-placeholder');
   const castBtn = document.getElementById('iptv-cast-btn');
+  const isNative = Capacitor.isNativePlatform();
 
   let hlsInstance = null;
   let cjs = null;

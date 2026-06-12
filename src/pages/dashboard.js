@@ -20,22 +20,7 @@ export async function renderDashboard(container) {
       let matches = data.matches || [];
       let isUpcoming = false;
 
-      // If no matches for the selected date, and the date is today or in the future, fetch upcoming matches
-      if (matches.length === 0) {
-        const today = getToday();
-        if (date >= today) {
-          // fetch next 7 days
-          const nextWeek = new Date(date);
-          nextWeek.setDate(nextWeek.getDate() + 7);
-          const toDate = nextWeek.toISOString().split('T')[0];
-          
-          const upcomingData = await getMatchesByDate(date, toDate);
-          if (upcomingData.matches && upcomingData.matches.length > 0) {
-            matches = upcomingData.matches;
-            isUpcoming = true;
-          }
-        }
-      }
+      // Removed 7-day fallback logic based on user request
 
       // Fetch remote live streams mapping if available
       let liveStreams = {};
