@@ -253,5 +253,5 @@ function renderLineups(match) {
         </div>
       </div>
     </div>
-  \`;
+  `;
 }

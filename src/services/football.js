@@ -166,20 +166,20 @@ export async function getTeam(id) {
 /** Get matches for a specific team */
 export async function getTeamMatches(id, limit = 10) {
   const season = new Date().getFullYear();
-  const fixtures = await cachedFetch(\`team_matches_\${id}\`, \`/fixtures?team=\${id}&season=\${season}&last=\${limit}\`, 'matches');
+  const fixtures = await cachedFetch(`team_matches_${id}`, `/fixtures?team=${id}&season=${season}&last=${limit}`, 'matches');
   return { matches: fixtures.map(mapMatch).filter(m => m != null) };
 }
 
 /** Get a specific match details (with lineups, stats, events) */
 export async function getMatch(id) {
-  const fixtures = await cachedFetch(\`match_\${id}\`, \`/fixtures?id=\${id}\`, 'live');
+  const fixtures = await cachedFetch(`match_${id}`, `/fixtures?id=${id}`, 'live');
   return mapMatch(fixtures[0]);
 }
 
 /** Get competition teams */
 export async function getCompetitionTeams(code) {
   const season = new Date().getFullYear();
-  const teamsRes = await cachedFetch(\`comp_teams_\${code}\`, \`/teams?league=\${code}&season=\${season}\`, 'teams');
+  const teamsRes = await cachedFetch(`comp_teams_${code}`, `/teams?league=${code}&season=${season}`, 'teams');
   return {
     teams: teamsRes.map(t => ({
       id: t.team.id,
