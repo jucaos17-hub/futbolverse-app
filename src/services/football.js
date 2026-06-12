@@ -22,8 +22,14 @@ export async function getCompetition(code) {
 
 /** Get today's matches across all competitions */
 export async function getMatchesByDate(dateFrom, dateTo) {
-  const key = `matches_${dateFrom}_${dateTo}`;
-  return cachedFetch(key, `/matches?dateFrom=${dateFrom}&dateTo=${dateTo}`, 'matches');
+  // Football-Data.org dateTo is exclusive (e.g., dateTo=2026-06-12 means strictly before 2026-06-12 00:00:00)
+  // We must add 1 day to dateTo to include the selected date's matches.
+  const toDate = new Date(dateTo);
+  toDate.setDate(toDate.getDate() + 1);
+  const nextDay = toDate.toISOString().split('T')[0];
+
+  const key = `matches_${dateFrom}_${nextDay}`;
+  return cachedFetch(key, `/matches?dateFrom=${dateFrom}&dateTo=${nextDay}`, 'matches');
 }
 
 /** Get matches for a specific competition */
