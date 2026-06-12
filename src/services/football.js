@@ -77,7 +77,7 @@ export async function getCompetitions() {
 
 /** Get a single competition details */
 export async function getCompetition(code) {
-  const leagues = await cachedFetch(\`competition_\${code}\`, \`/leagues?id=\${code}\`, 'competitions');
+  const leagues = await cachedFetch(`competition_${code}`, `/leagues?id=${code}`, 'competitions');
   const l = leagues[0];
   if (!l) return null;
   return {
@@ -92,7 +92,7 @@ export async function getMatchesByDate(dateFrom, dateTo) {
   // api-football format YYYY-MM-DD
   const fromStr = dateFrom.split('T')[0];
   const toStr = dateTo.split('T')[0];
-  const fixtures = await cachedFetch(\`matches_\${fromStr}_\${toStr}\`, \`/fixtures?from=\${fromStr}&to=\${toStr}\`, 'matches');
+  const fixtures = await cachedFetch(`matches_${fromStr}_${toStr}`, `/fixtures?from=${fromStr}&to=${toStr}`, 'matches');
   
   return { matches: fixtures.map(mapMatch).filter(m => m != null) };
 }
@@ -101,9 +101,9 @@ export async function getMatchesByDate(dateFrom, dateTo) {
 export async function getCompetitionMatches(code, matchday) {
   // Requires season. Default to current year.
   const season = new Date().getFullYear();
-  let endpoint = \`/fixtures?league=\${code}&season=\${season}\`;
+  let endpoint = `/fixtures?league=${code}&season=${season}`;
   // We can't map 'matchday' easily to API-Football rounds without complex round strings, so we fetch next/last 20
-  const fixtures = await cachedFetch(\`comp_matches_\${code}\`, endpoint, 'matches');
+  const fixtures = await cachedFetch(`comp_matches_${code}`, endpoint, 'matches');
   
   return { matches: fixtures.map(mapMatch).filter(m => m != null) };
 }
@@ -111,7 +111,7 @@ export async function getCompetitionMatches(code, matchday) {
 /** Get standings for a competition */
 export async function getStandings(code) {
   const season = new Date().getFullYear();
-  const res = await cachedFetch(\`standings_\${code}\`, \`/standings?league=\${code}&season=\${season}\`, 'standings');
+  const res = await cachedFetch(`standings_${code}`, `/standings?league=${code}&season=${season}`, 'standings');
   if (!res || !res[0] || !res[0].league || !res[0].league.standings) return { standings: [] };
   
   const standings = res[0].league.standings;
@@ -137,7 +137,7 @@ export async function getStandings(code) {
 /** Get top scorers for a competition */
 export async function getScorers(code) {
   const season = new Date().getFullYear();
-  const scorers = await cachedFetch(\`scorers_\${code}\`, \`/players/topscorers?league=\${code}&season=\${season}\`, 'scorers');
+  const scorers = await cachedFetch(`scorers_${code}`, `/players/topscorers?league=${code}&season=${season}`, 'scorers');
   
   return {
     scorers: scorers.map(s => ({
@@ -151,7 +151,7 @@ export async function getScorers(code) {
 
 /** Get a single team details */
 export async function getTeam(id) {
-  const teams = await cachedFetch(\`team_\${id}\`, \`/teams?id=\${id}\`, 'teams');
+  const teams = await cachedFetch(`team_${id}`, `/teams?id=${id}`, 'teams');
   const t = teams[0];
   if (!t) return null;
   return {

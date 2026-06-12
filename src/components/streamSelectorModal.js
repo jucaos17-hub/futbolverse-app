@@ -71,12 +71,12 @@ export async function openMatchStreamSelector(matchTitle) {
         // Use placeholder if no logo
         const logo = ch.logo || 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="100%" height="100%" fill="#333"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="12">TV</text></svg>');
         
-        return \`
-          <div class="ss-channel-card" data-url="\${ch.url}" style="background: var(--clr-surface-alt); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; border: 1px solid var(--clr-border); transition: all 0.2s;">
-            <img src="\${logo}" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 8px; border-radius: 8px; background: #fff; padding: 2px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'64\\' height=\\'64\\'%3E%3Crect width=\\'100%25\\' height=\\'100%25\\' fill=\\'%23333\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'12\\'%3ETV%3C/text%3E%3C/svg%3E'">
-            <div style="font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="\${ch.name}">\${ch.name}</div>
+        return `
+          <div class="ss-channel-card" data-url="${ch.url}" style="background: var(--clr-surface-alt); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; border: 1px solid var(--clr-border); transition: all 0.2s;">
+            <img src="${logo}" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 8px; border-radius: 8px; background: #fff; padding: 2px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'64\\' height=\\'64\\'%3E%3Crect width=\\'100%25\\' height=\\'100%25\\' fill=\\'%23333\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'12\\'%3ETV%3C/text%3E%3C/svg%3E'">
+            <div style="font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${ch.name}">${ch.name}</div>
           </div>
-        \`;
+        `;
       }).join('') + '</div>';
 
     // Add click listeners to cards

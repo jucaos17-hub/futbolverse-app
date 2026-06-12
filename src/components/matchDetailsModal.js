@@ -131,7 +131,7 @@ function parseStatVal(val) {
 
 function renderStatistics(match) {
   const stats = match.statistics;
-  if (!stats || stats.length < 2) return \`<div style="text-align:center; padding: 2rem; color: var(--clr-text-muted);">Estadísticas no disponibles aún</div>\`;
+  if (!stats || stats.length < 2) return `<div style="text-align:center; padding: 2rem; color: var(--clr-text-muted);">Estadísticas no disponibles aún</div>`;
   
   const homeStats = stats[0].statistics;
   const awayStats = stats[1].statistics;
@@ -159,19 +159,19 @@ function renderStatBar(title, val1Num, val2Num, val1Str, val2Str) {
   const v1Display = val1Str !== null ? val1Str : 0;
   const v2Display = val2Str !== null ? val2Str : 0;
   
-  return \`
+  return `
     <div>
       <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom: 4px;">
-        <span style="font-weight:bold;">\${v1Display}</span>
-        <span style="color:var(--clr-text-muted); text-transform: uppercase; font-size: 10px;">\${title}</span>
-        <span style="font-weight:bold;">\${v2Display}</span>
+        <span style="font-weight:bold;">${v1Display}</span>
+        <span style="color:var(--clr-text-muted); text-transform: uppercase; font-size: 10px;">${title}</span>
+        <span style="font-weight:bold;">${v2Display}</span>
       </div>
       <div style="display:flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--clr-border);">
-        <div style="width: \${pct1}%; background: #ff3366;"></div>
-        <div style="width: \${pct2}%; background: #3b82f6;"></div>
+        <div style="width: ${pct1}%; background: #ff3366;"></div>
+        <div style="width: ${pct2}%; background: #3b82f6;"></div>
       </div>
     </div>
-  \`;
+  `;
 }
 
 function getEventIcon(type, detail) {
@@ -184,7 +184,7 @@ function getEventIcon(type, detail) {
 
 function renderEvents(match) {
   const events = match.events;
-  if (!events || events.length === 0) return \`<div style="text-align:center; padding: 2rem; color: var(--clr-text-muted);">Eventos no disponibles aún</div>\`;
+  if (!events || events.length === 0) return `<div style="text-align:center; padding: 2rem; color: var(--clr-text-muted);">Eventos no disponibles aún</div>`;
   
   let html = '<div style="display:flex; flex-direction:column; gap: 16px; padding: 0 8px;">';
   
@@ -193,22 +193,22 @@ function renderEvents(match) {
   
   events.forEach(ev => {
     const isHome = ev.team.id === match.homeTeam.id;
-    const time = ev.time.elapsed + (ev.time.extra ? \`+\${ev.time.extra}\` : '') + "'";
+    const time = ev.time.elapsed + (ev.time.extra ? `+${ev.time.extra}` : '') + "'";
     const icon = getEventIcon(ev.type, ev.detail);
     const playerName = ev.player.name;
-    const assistName = ev.assist?.name ? \`<br><span style="font-size:10px;color:var(--clr-text-muted);">Asistencia: \${ev.assist.name}</span>\` : '';
+    const assistName = ev.assist?.name ? `<br><span style="font-size:10px;color:var(--clr-text-muted);">Asistencia: ${ev.assist.name}</span>` : '';
     
-    html += \`
-      <div style="display:flex; gap: 12px; align-items:center; \${isHome ? '' : 'flex-direction: row-reverse; text-align: right;'}">
-        <div style="font-weight:bold; color:\${isHome ? '#ff3366' : '#3b82f6'}; width: 40px; text-align: center;">\${time}</div>
-        <div style="font-size: 16px; display:flex; align-items:center; justify-content:center;">\${icon}</div>
+    html += `
+      <div style="display:flex; gap: 12px; align-items:center; ${isHome ? '' : 'flex-direction: row-reverse; text-align: right;'}">
+        <div style="font-weight:bold; color:${isHome ? '#ff3366' : '#3b82f6'}; width: 40px; text-align: center;">${time}</div>
+        <div style="font-size: 16px; display:flex; align-items:center; justify-content:center;">${icon}</div>
         <div style="flex:1;">
-          <div style="font-size: 14px; font-weight: 500;">\${playerName} \${ev.type === 'subst' ? \`(<span style="color:#e63946;">\${ev.assist.name}</span>)\` : ''}</div>
-          \${ev.type !== 'subst' ? assistName : ''}
-          <div style="font-size:10px; color:var(--clr-text-muted);">\${ev.detail}</div>
+          <div style="font-size: 14px; font-weight: 500;">${playerName} ${ev.type === 'subst' ? `(<span style="color:#e63946;">${ev.assist.name}</span>)` : ''}</div>
+          ${ev.type !== 'subst' ? assistName : ''}
+          <div style="font-size:10px; color:var(--clr-text-muted);">${ev.detail}</div>
         </div>
       </div>
-    \`;
+    `;
   });
   
   html += '</div>';
@@ -217,7 +217,7 @@ function renderEvents(match) {
 
 function renderLineups(match) {
   const lineups = match.lineups;
-  if (!lineups || lineups.length < 2) return \`<div style="text-align:center; padding: 2rem; color: var(--clr-text-muted);">Alineaciones no disponibles</div>\`;
+  if (!lineups || lineups.length < 2) return `<div style="text-align:center; padding: 2rem; color: var(--clr-text-muted);">Alineaciones no disponibles</div>`;
   
   const home = lineups[0];
   const away = lineups[1];
@@ -225,31 +225,31 @@ function renderLineups(match) {
   // Dibujar lista tradicional si el usuario prefiere scroll, 
   // o podemos dibujar los grids. Haremos lista por ahora para asegurar precisión y nombres reales.
   
-  return \`
+  return `
     <div style="display:flex; gap: 16px;">
       <!-- HOME -->
       <div style="flex: 1;">
-        <h4 style="margin: 0 0 8px 0; color: #ff3366; text-align: center; font-size: 14px;">\${home.formation}</h4>
+        <h4 style="margin: 0 0 8px 0; color: #ff3366; text-align: center; font-size: 14px;">${home.formation}</h4>
         <div style="background: var(--clr-surface-alt); border-radius: 8px; padding: 8px;">
-          \${home.startXI.map(p => \`
+          ${home.startXI.map(p => `
             <div style="display:flex; gap: 8px; align-items:center; padding: 6px 0; border-bottom: 1px solid var(--clr-border);">
-              <span style="width: 20px; font-size: 10px; color: var(--clr-text-muted); text-align:right;">\${p.player.number || ''}</span>
-              <span style="font-size: 12px; font-weight: 500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="\${p.player.name}">\${p.player.name}</span>
+              <span style="width: 20px; font-size: 10px; color: var(--clr-text-muted); text-align:right;">${p.player.number || ''}</span>
+              <span style="font-size: 12px; font-weight: 500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${p.player.name}">${p.player.name}</span>
             </div>
-          \`).join('')}
+          `).join('')}
         </div>
       </div>
       
       <!-- AWAY -->
       <div style="flex: 1;">
-        <h4 style="margin: 0 0 8px 0; color: #3b82f6; text-align: center; font-size: 14px;">\${away.formation}</h4>
+        <h4 style="margin: 0 0 8px 0; color: #3b82f6; text-align: center; font-size: 14px;">${away.formation}</h4>
         <div style="background: var(--clr-surface-alt); border-radius: 8px; padding: 8px;">
-          \${away.startXI.map(p => \`
+          ${away.startXI.map(p => `
             <div style="display:flex; gap: 8px; align-items:center; padding: 6px 0; border-bottom: 1px solid var(--clr-border); flex-direction: row-reverse;">
-              <span style="width: 20px; font-size: 10px; color: var(--clr-text-muted); text-align:left;">\${p.player.number || ''}</span>
-              <span style="font-size: 12px; font-weight: 500; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="\${p.player.name}">\${p.player.name}</span>
+              <span style="width: 20px; font-size: 10px; color: var(--clr-text-muted); text-align:left;">${p.player.number || ''}</span>
+              <span style="font-size: 12px; font-weight: 500; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${p.player.name}">${p.player.name}</span>
             </div>
-          \`).join('')}
+          `).join('')}
         </div>
       </div>
     </div>
