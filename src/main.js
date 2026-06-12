@@ -49,6 +49,22 @@ document.addEventListener('click', async (e) => {
   }
 });
 
+// Initialize routing
+const initialHash = window.location.hash || '#/';
+navigateTo(initialHash.replace('#', ''));
+
+// Hide Splash Screen after App is ready
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const splash = document.getElementById('fv-splash');
+    if (splash) {
+      splash.style.opacity = '0';
+      splash.style.visibility = 'hidden';
+      setTimeout(() => splash.remove(), 600); // Wait for transition
+    }
+  }, 800); // Little extra delay so it looks nice and everything has rendered
+});
+
 // Initialize header
 const headerEl = document.getElementById('main-header');
 renderHeader(headerEl);

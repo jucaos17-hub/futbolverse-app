@@ -15,6 +15,19 @@
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
+  <!-- SPLASH SCREEN DE CARGA -->
+  <div id="fv-splash" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.6s ease-out, visibility 0.6s ease-out;">
+    <div style="font-size: 80px; animation: pulse 1.5s infinite alternate; filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.5));">⚽</div>
+    <h1 style="color: white; font-family: 'Outfit', sans-serif; font-size: 28px; margin-top: 16px; letter-spacing: 1px;">Fútbol<span style="color: #00ff88;">Verse</span></h1>
+    <div style="width: 40px; height: 4px; background: rgba(255,255,255,0.1); margin-top: 24px; border-radius: 2px; overflow: hidden; position: relative;">
+      <div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: #00ff88; border-radius: 2px; animation: slide 1s infinite ease-in-out alternate;"></div>
+    </div>
+    <style>
+      @keyframes pulse { 0% { transform: scale(0.9); } 100% { transform: scale(1.1); } }
+      @keyframes slide { 0% { left: 0%; } 100% { left: 50%; } }
+    </style>
+  </div>
+
   <div id="app">
     <header id="main-header"></header>
     <main id="main-content"></main>
