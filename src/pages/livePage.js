@@ -178,7 +178,6 @@ export async function renderLivePage(container) {
   }
 
   // Modal Logic
-  const modalBackdrop = document.getElementById('live-modal-backdrop');
   const modalContent = document.getElementById('live-modal-content');
   const modalClose = document.getElementById('live-modal-close');
   const modalTitle = document.getElementById('live-modal-title');

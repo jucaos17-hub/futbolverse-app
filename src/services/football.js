@@ -99,7 +99,7 @@ export async function getMatchesByDate(dateFrom, dateTo) {
 /** Get matches for a specific competition */
 export async function getCompetitionMatches(code, matchday) {
   // Requires season. Default to current year.
-  const season = new Date().getFullYear();
+  const season = 2024;
   let endpoint = `/fixtures?league=${code}&season=${season}`;
   // We can't map 'matchday' easily to API-Football rounds without complex round strings, so we fetch next/last 20
   const fixtures = await cachedFetch(`comp_matches_${code}`, endpoint, 'matches');
@@ -109,7 +109,7 @@ export async function getCompetitionMatches(code, matchday) {
 
 /** Get standings for a competition */
 export async function getStandings(code) {
-  const season = new Date().getFullYear();
+  const season = 2024;
   const res = await cachedFetch(`standings_${code}`, `/standings?league=${code}&season=${season}`, 'standings');
   if (!res || !res[0] || !res[0].league || !res[0].league.standings) return { standings: [] };
   
@@ -135,7 +135,7 @@ export async function getStandings(code) {
 
 /** Get top scorers for a competition */
 export async function getScorers(code) {
-  const season = new Date().getFullYear();
+  const season = 2024;
   const scorers = await cachedFetch(`scorers_${code}`, `/players/topscorers?league=${code}&season=${season}`, 'scorers');
   
   return {
@@ -164,7 +164,7 @@ export async function getTeam(id) {
 
 /** Get matches for a specific team */
 export async function getTeamMatches(id, limit = 10) {
-  const season = new Date().getFullYear();
+  const season = 2024;
   const fixtures = await cachedFetch(`team_matches_${id}`, `/fixtures?team=${id}&season=${season}&last=${limit}`, 'matches');
   return { matches: fixtures.map(mapMatch).filter(m => m != null) };
 }
@@ -177,7 +177,7 @@ export async function getMatch(id) {
 
 /** Get competition teams */
 export async function getCompetitionTeams(code) {
-  const season = new Date().getFullYear();
+  const season = 2024;
   const teamsRes = await cachedFetch(`comp_teams_${code}`, `/teams?league=${code}&season=${season}`, 'teams');
   return {
     teams: teamsRes.map(t => ({
