@@ -1,7 +1,7 @@
 const API_KEY = 'f93a91526c234116b729d653cb461953';
 
 // En desarrollo (Vite dev server) usa proxy relativo; en producción/APK usa URL absoluta
-const isNativeApp = window.location.protocol === 'file:' || window.location.protocol === 'capacitor:';
+const isNativeApp = !!window.Capacitor || window.location.protocol === 'file:' || window.location.protocol === 'capacitor:';
 const BASE_URL = isNativeApp
   ? 'https://api.football-data.org/v4'
   : '/api/v4';
@@ -34,9 +34,17 @@ async function processQueue() {
         throw new Error(`API Error: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        const textData = await response.text();
+        data = JSON.parse(textData);
+      } catch (parseErr) {
+        throw new Error(`Invalid JSON from server. Maybe proxy failed?`);
+      }
+      
       resolve(data);
     } catch (err) {
+      console.error("API Error:", err);
       reject(err);
     }
 
