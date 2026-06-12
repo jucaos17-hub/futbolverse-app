@@ -34,6 +34,11 @@ export function renderHeader(container) {
             <span>Mi TV</span>
           </a>
         </nav>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button onclick="if(window.openThemeSelectorModal) window.openThemeSelectorModal()" class="icon-btn" aria-label="Cambiar Tema" title="Personalizar App" style="background: var(--clr-surface-alt); border: 1px solid var(--clr-border); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer;">
+            🎨
+          </button>
+        </div>
         <button class="header__hamburger" id="hamburger-btn" aria-label="Menú">
           <span></span>
           <span></span>

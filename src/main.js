@@ -14,11 +14,16 @@ import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 import { showMatchDetails } from './components/matchDetailsModal.js';
 import { openMatchStreamSelector } from './components/streamSelectorModal.js';
+import { loadSavedTheme, openThemeSelectorModal } from './components/themeManager.js';
+
+// Cargar colores de equipo preferido
+loadSavedTheme();
 
 // Export navigateTo globally for onclick handlers
 window.navigateTo = navigateTo;
 window.openMatchDetails = showMatchDetails;
 window.openMatchStreamSelector = openMatchStreamSelector;
+window.openThemeSelectorModal = openThemeSelectorModal;
 
 // Global function to play internal IPTV stream
 window.playInternalStream = (streamUrl) => {

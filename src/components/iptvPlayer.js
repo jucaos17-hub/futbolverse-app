@@ -45,7 +45,10 @@ export function renderIptvPlayer() {
         <!-- Video Player -->
         <div id="iptv-video-wrapper" style="flex: 2; min-width: 300px; background: #000; position: relative; min-height: 300px;">
           <video id="iptv-video-player" controls playsinline style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0;"></video>
-          <button id="iptv-fullscreen-btn" title="Pantalla completa" style="position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 20px; padding: 6px 10px; border-radius: 8px; cursor: pointer; display: none; backdrop-filter: blur(4px);">⛶</button>
+          <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 10;">
+            <button id="iptv-cast-btn" title="Transmitir a Smart TV" style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 20px; padding: 6px 10px; border-radius: 8px; cursor: pointer; display: none; backdrop-filter: blur(4px);">📺</button>
+            <button id="iptv-fullscreen-btn" title="Pantalla completa" style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 20px; padding: 6px 10px; border-radius: 8px; cursor: pointer; display: none; backdrop-filter: blur(4px);">⛶</button>
+          </div>
           <div id="iptv-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; background: rgba(0,0,0,0.7); color: white;">
             <div style="font-size: 40px; margin-bottom: 10px;">🍿</div>
             <div style="font-size: var(--fs-md); font-weight: 600;">Reproductor IPTV</div>
@@ -82,8 +85,19 @@ export function attachIptvEvents() {
   const channelList = document.getElementById('iptv-channel-list');
   const video = document.getElementById('iptv-video-player');
   const placeholder = document.getElementById('iptv-overlay') || document.getElementById('iptv-placeholder');
+  const castBtn = document.getElementById('iptv-cast-btn');
 
   let hlsInstance = null;
+  let cjs = null;
+
+  // Initialize Cast.js if available
+  if (window.Castjs) {
+    cjs = new window.Castjs();
+    cjs.on('available', () => {
+      // Show cast button if chromecast is available
+      if (castBtn) castBtn.style.display = 'block';
+    });
+  }
 
   const searchInput = document.getElementById('iptv-search-input');
   const countBadge = document.getElementById('iptv-channel-count');
@@ -448,6 +462,19 @@ export function attachIptvEvents() {
     if (video) {
       video.style.display = 'block';
     }
+    
+    // Cast button logic
+    if (castBtn && cjs && cjs.available) {
+      castBtn.style.display = 'block';
+      castBtn.onclick = () => {
+        // Enviar la señal al Chromecast
+        cjs.cast(streamUrl, {
+          title: 'FútbolVerse TV',
+          description: 'Transmisión en Vivo IPTV'
+        });
+      };
+    }
+
     if (fullscreenBtn) {
       fullscreenBtn.style.display = 'block';
       fullscreenBtn.onclick = () => {
