@@ -1,4 +1,4 @@
-const API_KEY = '424de991fdb838cff4cd35bc2f0dea94';
+const API_KEY = '892b0189cbed34081c12cb276a12e282';
 const getBaseUrl = () => 'https://v3.football.api-sports.io';
 
 let requestQueue = [];
