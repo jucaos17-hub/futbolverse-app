@@ -49,10 +49,6 @@ document.addEventListener('click', async (e) => {
   }
 });
 
-// Initialize routing
-const initialHash = window.location.hash || '#/';
-navigateTo(initialHash.replace('#', ''));
-
 // Hide Splash Screen after App is ready
 window.addEventListener('load', () => {
   setTimeout(() => {
@@ -83,6 +79,10 @@ registerRoute('/live', renderLivePage);
 
 // Start router
 initRouter();
+
+// Initialize routing
+const initialHash = window.location.hash || '#/';
+navigateTo(initialHash.replace('#', ''));
 
 // Clear expired cache on startup
 clearExpiredCache();
