@@ -1,7 +1,5 @@
 import { apiGet } from './api.js';
 import { cacheGet, cacheSet } from './cache.js';
-import { getFdMatchesByDate, getFdStandings } from './footballdataApi.js';
-
 async function cachedFetch(key, endpoint, cacheType = 'matches') {
   const cached = cacheGet(key);
   if (cached) return cached;
@@ -88,18 +86,7 @@ export async function getCompetition(code) {
   };
 }
 
-/** Get today's matches across all competitions */
 export async function getMatchesByDate(dateFrom, dateTo) {
-  // Intentar Footballdata primero para año en curso
-  const currentYear = new Date().getFullYear();
-  if (currentYear > 2024) {
-    const fdData = await getFdMatchesByDate(dateFrom);
-    if (fdData && fdData.matches && fdData.matches.length > 0) {
-      return fdData;
-    }
-  }
-
-  // Fallback a API-Sports
   const fromStr = dateFrom.split('T')[0];
   const fixtures = await cachedFetch(`matches_${fromStr}`, `/fixtures?date=${fromStr}`, 'matches');
   
@@ -118,19 +105,8 @@ export async function getCompetitionMatches(code, matchday) {
   return { matches: fixtures.map(mapMatch).filter(m => m != null) };
 }
 
-/** Get standings for a competition */
 export async function getStandings(code) {
   const currentYear = new Date().getFullYear();
-  
-  // Try Footballdata for 2026 data
-  if (currentYear > 2024) {
-    const fdData = await getFdStandings(code);
-    if (fdData && fdData.standings && fdData.standings.length > 0) {
-      return fdData; // Successfully retrieved 2026 data
-    }
-  }
-
-  // Fallback to API-Sports 2024
   const season = currentYear > 2024 ? 2024 : currentYear;
   const res = await cachedFetch(`standings_${code}`, `/standings?league=${code}&season=${season}`, 'standings');
   if (!res || !res[0] || !res[0].league || !res[0].league.standings) return { standings: [] };

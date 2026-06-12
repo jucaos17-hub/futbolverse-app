@@ -9,6 +9,7 @@ import { renderScorersPage } from './pages/scorers.js';
 import { renderTeamPage } from './pages/team.js';
 import { renderIptvPage } from './pages/iptvPage.js';
 import { renderLivePage } from './pages/livePage.js';
+import { renderPlayersPage } from './pages/playersPage.js';
 import { clearExpiredCache } from './services/cache.js';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
@@ -76,6 +77,7 @@ registerRoute('/scorers/:code', renderScorersPage);
 registerRoute('/team/:id', renderTeamPage);
 registerRoute('/iptv', renderIptvPage);
 registerRoute('/live', renderLivePage);
+registerRoute('/players', renderPlayersPage);
 
 // Start router
 initRouter();
