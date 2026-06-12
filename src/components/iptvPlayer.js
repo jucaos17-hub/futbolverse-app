@@ -1,5 +1,7 @@
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { fetchAndParseM3U } from '../services/iptv.js';
+
+const PiP = registerPlugin('PiP');
 
 export function renderIptvPlayer() {
   return `
@@ -46,6 +48,7 @@ export function renderIptvPlayer() {
         <div id="iptv-video-wrapper" style="flex: 2; min-width: 300px; background: #000; position: relative; min-height: 300px;">
           <video id="iptv-video-player" controls playsinline style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0;"></video>
           <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 10;">
+            <button id="iptv-pip-btn" title="Minimizar reproductor flotante" style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 20px; padding: 6px 10px; border-radius: 8px; cursor: pointer; display: none; backdrop-filter: blur(4px);">🗗</button>
             <button id="iptv-cast-btn" title="Transmitir a Smart TV" style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 20px; padding: 6px 10px; border-radius: 8px; cursor: pointer; display: none; backdrop-filter: blur(4px);">📺</button>
             <button id="iptv-fullscreen-btn" title="Pantalla completa" style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 20px; padding: 6px 10px; border-radius: 8px; cursor: pointer; display: none; backdrop-filter: blur(4px);">⛶</button>
           </div>
@@ -89,6 +92,25 @@ export function attachIptvEvents() {
 
   let hlsInstance = null;
   let cjs = null;
+
+  // Listen to video state to trigger Android PiP capability natively
+  if (video) {
+    video.addEventListener('play', () => {
+      if (Capacitor.isNativePlatform()) {
+        PiP.setVideoPlaying({ playing: true }).catch(()=>{});
+      }
+    });
+    video.addEventListener('pause', () => {
+      if (Capacitor.isNativePlatform()) {
+        PiP.setVideoPlaying({ playing: false }).catch(()=>{});
+      }
+    });
+    video.addEventListener('ended', () => {
+      if (Capacitor.isNativePlatform()) {
+        PiP.setVideoPlaying({ playing: false }).catch(()=>{});
+      }
+    });
+  }
 
   // Initialize Cast.js if available
   if (window.Castjs) {
@@ -483,6 +505,14 @@ export function attachIptvEvents() {
         } else if (video.webkitEnterFullscreen) {
           video.webkitEnterFullscreen(); // iOS Safari
         }
+      };
+    }
+
+    const pipBtn = document.getElementById('iptv-pip-btn');
+    if (pipBtn && isNative) {
+      pipBtn.style.display = 'block';
+      pipBtn.onclick = () => {
+        PiP.enterPiP().catch(()=>{});
       };
     }
 
