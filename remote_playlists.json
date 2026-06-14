@@ -10,6 +10,12 @@
           "url": "https://tecnotv.club/xm4p/lista.m3u",
           "user": "",
           "pass": ""
+        },
+        {
+          "name": "PRINCIPAL SSIPTV",
+          "url": "https://tecnotv.club/wbh2/lista.m3u",
+          "user": "",
+          "pass": ""
         }
       ]
     },
@@ -21,6 +27,12 @@
           "url": "https://tecnotv.club/xm4p/deportes.m3u",
           "user": "",
           "pass": ""
+        },
+        {
+          "name": "TecnoTV Deportes",
+          "url": "https://tecnotv.club/wbh2/deportes.m3u",
+          "user": "",
+          "pass": ""
         }
       ]
     },
@@ -30,6 +42,12 @@
         {
           "name": "🎬 Peliculas",
           "url": "https://tecnotv.club/xm4p/peliculas.m3u",
+          "user": "",
+          "pass": ""
+        },
+        {
+          "name": "Peliculas",
+          "url": "https://tecnotv.club/wbh2/peliculas.m3u",
           "user": "",
           "pass": ""
         }
