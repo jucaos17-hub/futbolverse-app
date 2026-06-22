@@ -242,6 +242,7 @@ export async function renderLivePage(container) {
     // Prioritize HLS.js if supported (works better on Android WebView and PC)
     if (window.Hls && window.Hls.isSupported()) {
       const hlsConfig = {
+        enableFetchAPI: true,
         xhrSetup: function(xhr, url) {
           if (!isNative) {
             try {

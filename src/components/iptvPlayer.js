@@ -538,27 +538,31 @@ export function attachIptvEvents() {
       hlsInstance = null;
     }
 
-    // Use native playback if supported (iOS/Safari), otherwise Hls.js for Android/Web
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = streamUrl;
-      video.play().catch(e => {
-        console.error("Native play failed", e);
-        errorMsg.textContent = "Error al reproducir. El formato del video podría no ser soportado nativamente.";
-        errorMsg.style.display = 'block';
-      });
-      video.onerror = function(e) {
-        console.error("Native video error", e);
-        errorMsg.textContent = "Error de red o formato inválido al intentar reproducir el canal.";
-        errorMsg.style.display = 'block';
+    const isNative = Capacitor.isNativePlatform();
+
+    // Use Hls.js if supported (prioritized for Android WebView and PC)
+    if (window.Hls && window.Hls.isSupported()) {
+      const hlsConfig = {
+        enableFetchAPI: true, // This is crucial for CapacitorHttp to handle binary streams correctly
+        xhrSetup: function(xhr, url) {
+          if (!isNative) {
+            try {
+              const urlObj = new URL(url);
+              if (urlObj.origin !== window.location.origin) {
+                // Apply CORS proxy ONLY in browser
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                xhr.open('GET', proxyUrl, true);
+              }
+            } catch(e) {}
+          }
+        }
       };
-    } else if (window.Hls && window.Hls.isSupported()) {
-      const hlsConfig = {};
       
       hlsInstance = new window.Hls(hlsConfig);
       hlsInstance.loadSource(streamUrl);
       hlsInstance.attachMedia(video);
       hlsInstance.on(window.Hls.Events.MANIFEST_PARSED, function() {
-        video.play();
+        video.play().catch(()=>{});
       });
       hlsInstance.on(window.Hls.Events.ERROR, function(event, data) {
         if (data.fatal) {
@@ -568,10 +572,10 @@ export function attachIptvEvents() {
               if (!isNative) {
                 errorMsg.textContent = "Error de red. Algunos canales privados solo funcionan en la APK.";
               } else {
-                errorMsg.textContent = "Error de red al intentar reproducir el canal.";
+                errorMsg.textContent = "Error de red al intentar reproducir el canal. Podría estar bloqueado o caído.";
               }
               errorMsg.style.display = 'block';
-              hlsInstance.startLoad();
+              hlsInstance.destroy();
               break;
             case window.Hls.ErrorTypes.MEDIA_ERROR:
               console.error("fatal media error encountered, try to recover");
@@ -583,13 +587,22 @@ export function attachIptvEvents() {
           }
         }
       });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    } 
+    // Fallback for iOS natively
+    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = streamUrl;
-      video.addEventListener('loadedmetadata', function() {
-        video.play();
+      video.play().catch(e => {
+        console.error("Native play failed", e);
+        errorMsg.textContent = "Error al reproducir. El formato del video podría no ser soportado nativamente.";
+        errorMsg.style.display = 'block';
       });
+      video.onerror = function(e) {
+        console.error("Native video error", e);
+        errorMsg.textContent = "Error de red o formato inválido al intentar reproducir el canal.";
+        errorMsg.style.display = 'block';
+      };
     } else {
-      errorMsg.textContent = "Tu navegador no soporta la reproducción de video HLS.";
+      errorMsg.textContent = "Tu dispositivo no soporta la reproducción de video HLS.";
       errorMsg.style.display = 'block';
     }
   }
