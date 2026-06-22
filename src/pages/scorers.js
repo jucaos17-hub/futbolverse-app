@@ -41,24 +41,40 @@ export async function renderScorersPage(container, params) {
     });
   }
 
-  try {
-    const data = await getScorers(code);
-    const scorers = data.scorers || [];
-    const content = document.getElementById('scorers-content');
-    if (!content) return;
+  let refreshTimer = null;
 
-    content.innerHTML = `<div class="anim-fade-up">${renderScorersTable(scorers)}</div>`;
-  } catch (err) {
-    console.error('[Scorers] Error:', err);
-    const content = document.getElementById('scorers-content');
-    if (content) {
-      content.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state__icon">⚠️</div>
-          <div class="empty-state__title">Error al cargar goleadores</div>
-          <div class="empty-state__text">${err.message}</div>
-        </div>
-      `;
+  async function loadScorers() {
+    try {
+      const data = await getScorers(code);
+      const scorers = data.scorers || [];
+      const content = document.getElementById('scorers-content');
+      if (!content) return;
+
+      content.innerHTML = `<div class="anim-fade-up">${renderScorersTable(scorers)}</div>`;
+    } catch (err) {
+      console.error('[Scorers] Error:', err);
+      const content = document.getElementById('scorers-content');
+      if (content) {
+        content.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">⚠️</div>
+            <div class="empty-state__title">Error al cargar goleadores</div>
+            <div class="empty-state__text">${err.message}</div>
+          </div>
+        `;
+      }
     }
   }
+
+  await loadScorers();
+
+  // Auto-refresh every 2 minutes
+  refreshTimer = setInterval(() => {
+    loadScorers();
+  }, 120000);
+
+  // Return cleanup function
+  return () => {
+    if (refreshTimer) clearInterval(refreshTimer);
+  };
 }

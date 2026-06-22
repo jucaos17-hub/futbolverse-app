@@ -4,7 +4,7 @@ const TTL = {
   live: 2 * 60 * 1000,         // 2 minutes
   matches: 5 * 60 * 1000,      // 5 minutes
   standings: 15 * 60 * 1000,   // 15 minutes
-  scorers: 30 * 60 * 1000,     // 30 minutes
+  scorers: 5 * 60 * 1000,      // 5 minutes (reduced for real-time World Cup updates)
   teams: 60 * 60 * 1000,       // 1 hour
   competitions: 24 * 60 * 60 * 1000, // 24 hours
 };

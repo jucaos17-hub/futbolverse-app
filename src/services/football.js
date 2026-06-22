@@ -68,8 +68,23 @@ export async function getStandings(code) {
 }
 
 /** Get top scorers for a competition */
-export async function getScorers(code) {
-  return cachedFetch(`scorers_${code}`, `/competitions/${code}/scorers`, 'scorers');
+export async function getScorers(code, season = null) {
+  let endpoint = `/competitions/${code}/scorers`;
+  if (season) endpoint += `?season=${season}`;
+  const key = `scorers_${code}_${season || 'current'}`;
+  
+  let data = await cachedFetch(key, endpoint, 'scorers');
+
+  // Fallback to previous season if no scorers are found (e.g. summer break before first match)
+  if (!season && data && (!data.scorers || data.scorers.length === 0)) {
+    const prevSeason = new Date().getFullYear() - 1;
+    const prevData = await cachedFetch(`scorers_${code}_${prevSeason}`, `/competitions/${code}/scorers?season=${prevSeason}`, 'scorers');
+    if (prevData && prevData.scorers && prevData.scorers.length > 0) {
+      data = prevData;
+    }
+  }
+
+  return data;
 }
 
 /** Get a single team details (squad, etc.) */
