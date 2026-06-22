@@ -64,17 +64,14 @@ export function renderMatchCard(match, internalStreamUrl = null) {
   
   let broadcastHtml = '';
   if (!finished && live) {
-    // Escaped string for onClick
-    const escapedMatchTitle = (home.shortName || home.name) + ' vs ' + (away.shortName || away.name);
-    
-    // Solo mostrar el botón Smart IPTV
+    // Solo mostrar el botón que lleva a los canales de transmisión
     broadcastHtml = `
       <div class="broadcast-wrapper" onclick="event.stopPropagation()">
         <div style="font-size: 11px; color: var(--clr-text-muted); text-align: center; margin-bottom: 8px;">
           Transmitiendo en: <strong style="color: var(--clr-text);">${suggestedChannels}</strong>
         </div>
-        <button class="btn btn--primary" style="width: 100%; padding: 8px; font-weight: bold; font-size: 14px; background: #e11d48; border: none; border-radius: 8px; cursor: pointer; color: white;" onclick="if(window.openMatchStreamSelector) window.openMatchStreamSelector('${escapedMatchTitle}')">
-          🔴 VER PARTIDO EN MI TV
+        <button class="btn btn--primary" style="width: 100%; padding: 8px; font-weight: bold; font-size: 14px; background: #e11d48; border: none; border-radius: 8px; cursor: pointer; color: white;" onclick="if(window.navigateTo) window.navigateTo('/live')">
+          🔴 VER PARTIDO EN VIVO
         </button>
       </div>
     `;
