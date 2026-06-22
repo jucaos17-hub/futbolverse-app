@@ -237,33 +237,22 @@ export async function renderLivePage(container) {
       currentHlsInstance = null;
     }
 
-    // iOS supports HLS natively, Android WebView does NOT. 
-    // Instead of checking isNative, we check for native HLS support.
-    if (modalVideo.canPlayType('application/vnd.apple.mpegurl')) {
-      modalVideo.src = streamUrl;
-      modalVideo.play().catch(e => showError("Error nativo al reproducir."));
-      
-      modalVideo.onerror = () => {
-        showError("Error de red o formato inválido (Native).");
-      };
-    } else if (window.Hls && window.Hls.isSupported()) {
-      
-      const corsProxies = [
-        (u) => 'https://corsproxy.io/?' + encodeURIComponent(u),
-        (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-      ];
-      let proxyIndex = 0;
+    const isNative = Capacitor.isNativePlatform();
 
+    // Prioritize HLS.js if supported (works better on Android WebView and PC)
+    if (window.Hls && window.Hls.isSupported()) {
       const hlsConfig = {
         xhrSetup: function(xhr, url) {
-          try {
-            const urlObj = new URL(url);
-            if (urlObj.origin !== window.location.origin) {
-              // Aplicar proxy para evitar error de CORS en el navegador
-              const proxyUrl = corsProxies[proxyIndex % corsProxies.length](url);
-              xhr.open('GET', proxyUrl, true);
-            }
-          } catch(e) {}
+          if (!isNative) {
+            try {
+              const urlObj = new URL(url);
+              if (urlObj.origin !== window.location.origin) {
+                // Apply CORS proxy ONLY in browser, native app uses CapacitorHttp
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                xhr.open('GET', proxyUrl, true);
+              }
+            } catch(e) {}
+          }
         }
       };
 
@@ -271,14 +260,14 @@ export async function renderLivePage(container) {
       currentHlsInstance.loadSource(streamUrl);
       currentHlsInstance.attachMedia(modalVideo);
       currentHlsInstance.on(window.Hls.Events.MANIFEST_PARSED, () => {
-        modalVideo.play();
+        modalVideo.play().catch(() => {});
       });
       currentHlsInstance.on(window.Hls.Events.ERROR, (event, data) => {
         if (data.fatal) {
           switch (data.type) {
             case window.Hls.ErrorTypes.NETWORK_ERROR:
               currentHlsInstance.destroy();
-              showError("Error de Red (CORS). El navegador bloquea el video. Instala una extensión 'Allow CORS' para probar en PC, o prueba la app directamente en Android/iOS.");
+              showError(isNative ? "Error de conexión al canal." : "Error de CORS en el navegador. Usa la APK nativa.");
               break;
             case window.Hls.ErrorTypes.MEDIA_ERROR:
               currentHlsInstance.recoverMediaError();
@@ -290,11 +279,17 @@ export async function renderLivePage(container) {
           }
         }
       });
-    } else if (modalVideo.canPlayType('application/vnd.apple.mpegurl')) {
+    } 
+    // Fallback for iOS (Safari does not support MediaSource API, but natively supports HLS)
+    else if (modalVideo.canPlayType('application/vnd.apple.mpegurl')) {
       modalVideo.src = streamUrl;
-      modalVideo.addEventListener('loadedmetadata', () => modalVideo.play());
+      modalVideo.play().catch(e => showError("Error nativo al reproducir."));
+      
+      modalVideo.onerror = () => {
+        showError("Error de red o formato inválido (Native).");
+      };
     } else {
-      showError("Tu navegador no soporta reproducción HLS.");
+      showError("Tu dispositivo no soporta reproducción HLS.");
     }
   }
 

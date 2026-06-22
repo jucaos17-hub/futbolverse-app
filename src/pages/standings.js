@@ -37,71 +37,87 @@ export async function renderStandingsPage(container, params) {
     });
   }
 
-  try {
-    const data = await getStandings(code);
-    const standingsArr = data.standings || [];
-    const content = document.getElementById('standings-content');
-    if (!content) return;
+  let refreshTimer = null;
 
-    if (standingsArr.length === 0) {
-      content.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state__icon">📊</div>
-          <div class="empty-state__title">Sin datos de clasificación</div>
-          <div class="empty-state__text">Esta competición no tiene tabla de posiciones disponible en este momento.</div>
-        </div>
-      `;
-      return;
-    }
+  async function loadStandings() {
+    try {
+      const data = await getStandings(code);
+      const standingsArr = data.standings || [];
+      const content = document.getElementById('standings-content');
+      if (!content) return;
 
-    // Filter all TOTAL standings (for tournaments with groups)
-    const totalStandings = standingsArr.filter(s => s.type === 'TOTAL');
-    
-    if (totalStandings.length === 0) {
-      // Fallback
-      content.innerHTML = `
-        <div class="anim-fade-up">
-          ${renderStandingsTable(standingsArr[0])}
-        </div>
-      `;
-    } else {
-      let html = '<div class="anim-fade-up" style="display:flex; flex-direction:column; gap:var(--sp-xl);">';
-      for (const s of totalStandings) {
-        if (s.group) {
-          const groupName = s.group.replace('_', ' ');
-          html += `
-            <div class="standings-group">
-              <h3 style="margin-bottom: var(--sp-md); color: var(--clr-text); font-size: var(--fs-md); border-bottom: 1px solid var(--clr-border); padding-bottom: 8px;">${groupName}</h3>
-              ${renderStandingsTable(s)}
-            </div>
-          `;
-        } else {
-          html += renderStandingsTable(s);
-        }
+      if (standingsArr.length === 0) {
+        content.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">📊</div>
+            <div class="empty-state__title">Sin datos de clasificación</div>
+            <div class="empty-state__text">Esta competición no tiene tabla de posiciones disponible en este momento.</div>
+          </div>
+        `;
+        return;
       }
-      html += '</div>';
-      content.innerHTML = html;
-    }
 
-    // Team name click → team page
-    content.querySelectorAll('.standings-table__team-name').forEach(el => {
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const teamId = el.getAttribute('data-team-id');
-        if (teamId) navigateTo(`/team/${teamId}`);
+      // Filter all TOTAL standings (for tournaments with groups)
+      const totalStandings = standingsArr.filter(s => s.type === 'TOTAL');
+      
+      if (totalStandings.length === 0) {
+        // Fallback
+        content.innerHTML = `
+          <div class="anim-fade-up">
+            ${renderStandingsTable(standingsArr[0])}
+          </div>
+        `;
+      } else {
+        let html = '<div class="anim-fade-up" style="display:flex; flex-direction:column; gap:var(--sp-xl);">';
+        for (const s of totalStandings) {
+          if (s.group) {
+            const groupName = s.group.replace('_', ' ');
+            html += `
+              <div class="standings-group">
+                <h3 style="margin-bottom: var(--sp-md); color: var(--clr-text); font-size: var(--fs-md); border-bottom: 1px solid var(--clr-border); padding-bottom: 8px;">${groupName}</h3>
+                ${renderStandingsTable(s)}
+              </div>
+            `;
+          } else {
+            html += renderStandingsTable(s);
+          }
+        }
+        html += '</div>';
+        content.innerHTML = html;
+      }
+
+      // Team name click → team page
+      content.querySelectorAll('.standings-table__team-name').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const teamId = el.getAttribute('data-team-id');
+          if (teamId) navigateTo(`/team/${teamId}`);
+        });
       });
-    });
-  } catch (err) {
-    console.error('[Standings] Error:', err);
-    const content = document.getElementById('standings-content');
-    if (content) {
-      content.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state__icon">⚠️</div>
-          <div class="empty-state__title">Error al cargar clasificación</div>
-          <div class="empty-state__text">${err.message}</div>
-        </div>
-      `;
+    } catch (err) {
+      console.error('[Standings] Error:', err);
+      const content = document.getElementById('standings-content');
+      if (content) {
+        content.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">⚠️</div>
+            <div class="empty-state__title">Error al cargar clasificación</div>
+            <div class="empty-state__text">${err.message}</div>
+          </div>
+        `;
+      }
     }
   }
+
+  await loadStandings();
+
+  // Auto-refresh every 2 minutes
+  refreshTimer = setInterval(() => {
+    loadStandings();
+  }, 120000);
+
+  // Return cleanup function
+  return () => {
+    if (refreshTimer) clearInterval(refreshTimer);
+  };
 }
