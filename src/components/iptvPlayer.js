@@ -1,5 +1,6 @@
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import { fetchAndParseM3U } from '../services/iptv.js';
+import { createNativeHlsLoader, shouldUseNativeLoader } from '../services/hlsNativeLoader.js';
 
 const PiP = registerPlugin('PiP');
 
@@ -542,21 +543,27 @@ export function attachIptvEvents() {
 
     // Use Hls.js if supported (prioritized for Android WebView and PC)
     if (window.Hls && window.Hls.isSupported()) {
-      const hlsConfig = {
-        enableFetchAPI: true, // This is crucial for CapacitorHttp to handle binary streams correctly
-        xhrSetup: function(xhr, url) {
-          if (!isNative) {
-            try {
-              const urlObj = new URL(url);
-              if (urlObj.origin !== window.location.origin) {
-                // Apply CORS proxy ONLY in browser
-                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
-                xhr.open('GET', proxyUrl, true);
-              }
-            } catch(e) {}
-          }
-        }
-      };
+      const hlsConfig = {};
+
+      if (isNative && shouldUseNativeLoader()) {
+        // On native Capacitor: use custom loader that bypasses CapacitorHttp
+        const NativeLoader = createNativeHlsLoader();
+        hlsConfig.loader = NativeLoader;
+        hlsConfig.enableFetchAPI = false;
+        console.log('[HLS-IPTV] Using NativeXHRLoader to bypass CapacitorHttp');
+      } else {
+        // On browser: use fetch with CORS proxy
+        hlsConfig.enableFetchAPI = true;
+        hlsConfig.xhrSetup = function(xhr, url) {
+          try {
+            const urlObj = new URL(url);
+            if (urlObj.origin !== window.location.origin) {
+              const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+              xhr.open('GET', proxyUrl, true);
+            }
+          } catch(e) {}
+        };
+      }
       
       hlsInstance = new window.Hls(hlsConfig);
       hlsInstance.loadSource(streamUrl);

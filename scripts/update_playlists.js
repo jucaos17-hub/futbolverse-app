@@ -58,52 +58,37 @@ async function scrapePlaylists() {
     }
   }
 
-  let hasChanges = false;
-
-  // Actualizar listas (Asumiremos que 'sports' es DEPORTES y 'other' podría ser PRINCIPAL y PELICULAS)
-  // Vamos a preservar la estructura que ya tenías o crearla si no existe.
-  
-  // Asegurar estructura
-  if (!Array.isArray(currentData.categories)) {
-    currentData.categories = [
-      { name: "📺 TV en Vivo", playlists: [] },
-      { name: "⚽ Deportes", playlists: [] },
-      { name: "🎬 Películas y Series", playlists: [] }
-    ];
-  }
-
-  // Función auxiliar para obtener o crear la categoría
-  const getCategory = (catName) => {
-    let cat = currentData.categories.find(c => c.name === catName);
-    if (!cat) {
-      cat = { name: catName, playlists: [] };
-      currentData.categories.push(cat);
-    }
-    if (!Array.isArray(cat.playlists)) cat.playlists = [];
-    return cat;
-  };
-
-  // Función auxiliar para actualizar o agregar url
-  const updatePlaylist = (catName, plName, newUrl) => {
-    const category = getCategory(catName);
-    const index = category.playlists.findIndex(item => item.name === plName);
-    
-    if (index !== -1) {
-      if (category.playlists[index].url !== newUrl) {
-        console.log(`Actualizando [${plName}]: ${category.playlists[index].url} -> ${newUrl}`);
-        category.playlists[index].url = newUrl;
-        hasChanges = true;
+  // Preparar la nueva estructura de datos, eliminando las listas anteriores para no acumular
+  const newData = {
+    version: currentData.version || 1,
+    updated: new Date().toISOString().split('T')[0],
+    categories: [
+      {
+        name: "📺 TV en Vivo",
+        playlists: [
+          { name: "🌎 TV (Todos los canales)", url: playlists.principal, user: "", pass: "" }
+        ]
+      },
+      {
+        name: "⚽ Deportes",
+        playlists: [
+          { name: "⚽ TecnoTV Deportes", url: playlists.deportes, user: "", pass: "" }
+        ]
+      },
+      {
+        name: "🎬 Películas y Series",
+        playlists: [
+          { name: "🎬 Peliculas", url: playlists.peliculas, user: "", pass: "" }
+        ]
       }
-    } else {
-      console.log(`Agregando [${plName}]: ${newUrl}`);
-      category.playlists.push({ name: plName, url: newUrl, user: "", pass: "" });
-      hasChanges = true;
-    }
+    ]
   };
 
-  updatePlaylist("📺 TV en Vivo", "PRINCIPAL SSIPTV", playlists.principal);
-  updatePlaylist("⚽ Deportes", "TecnoTV Deportes", playlists.deportes);
-  updatePlaylist("🎬 Películas y Series", "Peliculas", playlists.peliculas);
+  const currentDataStr = JSON.stringify(currentData, null, 2);
+  const newDataStr = JSON.stringify(newData, null, 2);
+  const hasChanges = currentDataStr !== newDataStr;
+  
+  currentData = newData;
 
   if (hasChanges) {
     console.log('Se detectaron cambios. Guardando remote_playlists.json...');

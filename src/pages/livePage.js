@@ -2,6 +2,7 @@ import { fetchLiveChannels } from '../services/liveAggregator.js';
 import { fetchEPG } from '../services/epgService.js';
 import { renderLiveChannelCard } from '../components/liveMatchCard.js';
 import { Capacitor } from '@capacitor/core';
+import { createNativeHlsLoader, shouldUseNativeLoader } from '../services/hlsNativeLoader.js';
 
 let currentHlsInstance = null;
 
@@ -241,21 +242,28 @@ export async function renderLivePage(container) {
 
     // Prioritize HLS.js if supported (works better on Android WebView and PC)
     if (window.Hls && window.Hls.isSupported()) {
-      const hlsConfig = {
-        enableFetchAPI: true,
-        xhrSetup: function(xhr, url) {
-          if (!isNative) {
-            try {
-              const urlObj = new URL(url);
-              if (urlObj.origin !== window.location.origin) {
-                // Apply CORS proxy ONLY in browser, native app uses CapacitorHttp
-                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
-                xhr.open('GET', proxyUrl, true);
-              }
-            } catch(e) {}
-          }
-        }
-      };
+      const hlsConfig = {};
+
+      if (isNative && shouldUseNativeLoader()) {
+        // On native Capacitor: use custom loader that bypasses CapacitorHttp
+        // This prevents the native bridge from corrupting binary HLS segments
+        const NativeLoader = createNativeHlsLoader();
+        hlsConfig.loader = NativeLoader;
+        hlsConfig.enableFetchAPI = false;
+        console.log('[HLS] Using NativeXHRLoader to bypass CapacitorHttp');
+      } else {
+        // On browser: use fetch with CORS proxy
+        hlsConfig.enableFetchAPI = true;
+        hlsConfig.xhrSetup = function(xhr, url) {
+          try {
+            const urlObj = new URL(url);
+            if (urlObj.origin !== window.location.origin) {
+              const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+              xhr.open('GET', proxyUrl, true);
+            }
+          } catch(e) {}
+        };
+      }
 
       currentHlsInstance = new window.Hls(hlsConfig);
       currentHlsInstance.loadSource(streamUrl);
@@ -264,13 +272,21 @@ export async function renderLivePage(container) {
         modalVideo.play().catch(() => {});
       });
       currentHlsInstance.on(window.Hls.Events.ERROR, (event, data) => {
+        console.warn('[HLS] Error:', data.type, data.details, data.reason);
         if (data.fatal) {
           switch (data.type) {
             case window.Hls.ErrorTypes.NETWORK_ERROR:
-              currentHlsInstance.destroy();
-              showError(isNative ? "Error de conexión al canal." : "Error de CORS en el navegador. Usa la APK nativa.");
+              // On native, try one media error recovery before giving up
+              if (isNative && data.details === 'manifestLoadError') {
+                console.log('[HLS] Retrying manifest load...');
+                currentHlsInstance.loadSource(streamUrl);
+              } else {
+                currentHlsInstance.destroy();
+                showError(isNative ? "Error de conexión al canal. Intenta de nuevo." : "Error de CORS en el navegador. Usa la APK nativa.");
+              }
               break;
             case window.Hls.ErrorTypes.MEDIA_ERROR:
+              console.log('[HLS] Attempting media error recovery...');
               currentHlsInstance.recoverMediaError();
               break;
             default:

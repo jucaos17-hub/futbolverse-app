@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "updated": "2026-06-10",
+  "updated": "2026-06-16",
   "categories": [
     {
       "name": "📺 TV en Vivo",
       "playlists": [
         {
           "name": "🌎 TV (Todos los canales)",
-          "url": "https://tecnotv.club/xm4p/lista.m3u",
+          "url": "https://tecnotv.club/ncnq/lista.m3u",
           "user": "",
           "pass": ""
         },
@@ -24,7 +24,7 @@
       "playlists": [
         {
           "name": "⚽ TecnoTV Deportes",
-          "url": "https://tecnotv.club/xm4p/deportes.m3u",
+          "url": "https://tecnotv.club/ncnq/deportes.m3u",
           "user": "",
           "pass": ""
         },
@@ -41,7 +41,7 @@
       "playlists": [
         {
           "name": "🎬 Peliculas",
-          "url": "https://tecnotv.club/xm4p/peliculas.m3u",
+          "url": "https://tecnotv.club/ncnq/peliculas.m3u",
           "user": "",
           "pass": ""
         },
