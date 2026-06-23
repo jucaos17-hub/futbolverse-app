@@ -3,6 +3,7 @@ import { renderSkeleton } from '../components/skeleton.js';
 import { formatDate, formatTime, formatScore, translateStatus, isLive, isFinished } from '../utils/formatters.js';
 import { navigateTo } from '../router.js';
 import { BROADCASTERS, DEFAULT_BROADCASTER } from '../utils/constants.js';
+import { openMatchStreamSelector } from '../components/streamSelectorModal.js';
 
 export async function renderMatchDetail(container, params) {
   const matchId = params.id;
@@ -35,7 +36,8 @@ export async function renderMatchDetail(container, params) {
 
     // Get broadcasters for this match
     const compCode = match.competition?.code || 'OTHER';
-    const broadcasterList = BROADCASTERS[compCode]?.channels || DEFAULT_BROADCASTER.channels;
+    const broadcasterInfo = BROADCASTERS[compCode] || DEFAULT_BROADCASTER || { names: ['ESPN', 'DSports'] };
+    const broadcasterList = broadcasterInfo.names || ['ESPN', 'DSports'];
 
     // Goals
     const goals = match.goals || [];
@@ -111,20 +113,28 @@ export async function renderMatchDetail(container, params) {
 
         <div class="integrated-player-section anim-fade-up" style="margin-bottom: var(--sp-xl); animation-delay: 100ms;">
           <div style="text-align: center; margin-bottom: var(--sp-md);">
-            <h3 style="font-size: var(--fs-md); margin-bottom: var(--sp-sm);">📺 Transmisión Integrada</h3>
-            <p style="font-size: var(--fs-sm); color: var(--clr-text-secondary); margin-bottom: var(--sp-md);">Selecciona un servidor oficial o gratuito para ver el partido:</p>
-            <div style="display: flex; gap: var(--sp-sm); justify-content: center; flex-wrap: wrap; margin-bottom: var(--sp-sm);">
-              ${broadcasterList.map(b => `
-                <button class="btn btn--secondary stream-btn" data-url="${b.url}">
-                  ${b.icon} ${b.name}
-                </button>
-              `).join('')}
-            </div>
+            <h3 style="font-size: var(--fs-md); margin-bottom: var(--sp-sm);">📺 Transmisión</h3>
+            ${live ? `
+              <p style="font-size: var(--fs-sm); color: #ff3366; font-weight: 600; margin-bottom: var(--sp-md);">¡Este partido se está jugando ahora! Selecciona un canal para verlo en vivo:</p>
+              <button id="open-live-channels" class="btn btn--primary" style="padding: 14px 28px; font-size: 16px; font-weight: bold; background: linear-gradient(135deg, #e11d48, #be123c); border: none; border-radius: 12px; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4); animation: pulse-glow 2s infinite;">
+                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#fff;animation:pulse 1.5s infinite;"></span>
+                🔴 VER PARTIDO EN VIVO
+              </button>
+              <p style="font-size: var(--fs-xs); color: var(--clr-text-muted); margin-top: var(--sp-sm);">Canales sugeridos: <strong>${broadcasterList.map(b => b.name || b).join(', ')}</strong></p>
+            ` : `
+              <p style="font-size: var(--fs-sm); color: var(--clr-text-secondary); margin-bottom: var(--sp-md);">Selecciona un servidor oficial o gratuito para ver el partido:</p>
+              <div style="display: flex; gap: var(--sp-sm); justify-content: center; flex-wrap: wrap; margin-bottom: var(--sp-sm);">
+                ${broadcasterList.map(b => `
+                  <button class="btn btn--secondary stream-btn" data-url="${b.url || '#'}">
+                    ${b.icon || '📺'} ${b.name || b}
+                  </button>
+                `).join('')}
+              </div>
+            `}
             
-            <div style="margin-top: var(--sp-md); padding-top: var(--sp-md); border-top: 1px dashed var(--clr-border);">
-          </div>
+            <div style="margin-top: var(--sp-md); padding-top: var(--sp-md); border-top: 1px dashed var(--clr-border);"></div>
 
-          <!-- Default Iframe Player -->
+          <!-- Default Iframe Player (for non-live web streams) -->
           <div id="player-wrapper">
             <div id="player-container" style="display: none; width: 100%; max-width: 900px; margin: 0 auto; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--clr-border); box-shadow: var(--shadow-lg);">
               <iframe id="player-iframe" src="" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
@@ -168,7 +178,16 @@ export async function renderMatchDetail(container, params) {
     const playerWarning = document.getElementById('player-warning');
     const playerExternalLink = document.getElementById('player-external-link');
     
-    // Web Stream buttons
+    // Live channel selector button
+    const liveChannelBtn = document.getElementById('open-live-channels');
+    if (liveChannelBtn) {
+      const matchTitle = `${home.shortName || home.name} vs ${away.shortName || away.name}`;
+      liveChannelBtn.addEventListener('click', () => {
+        openMatchStreamSelector(matchTitle);
+      });
+    }
+
+    // Web Stream buttons (for non-live iframe approach)
     container.querySelectorAll('.stream-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         // Remove active class from all
@@ -191,8 +210,6 @@ export async function renderMatchDetail(container, params) {
         playerContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
     });
-
-    // All web stream logic is handled above
 
   } catch (err) {
     console.error('[MatchDetail] Error:', err);

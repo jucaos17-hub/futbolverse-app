@@ -113,6 +113,11 @@
   100% { background-position: 0% 50%; }
 }
 
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4); }
+  50% { box-shadow: 0 4px 25px rgba(225, 29, 72, 0.7), 0 0 40px rgba(225, 29, 72, 0.3); }
+}
+
 /* ═══ ANIMATION CLASSES ═══ */
 
 .anim-fade-in {

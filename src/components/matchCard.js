@@ -64,14 +64,17 @@ export function renderMatchCard(match, internalStreamUrl = null) {
   
   let broadcastHtml = '';
   if (!finished && live) {
-    // Solo mostrar el botón que lleva a los canales de transmisión
+    // Construir el título del partido para el selector
+    const matchTitle = `${home.shortName || home.name} vs ${away.shortName || away.name}`;
+    // Solo mostrar el botón que abre el selector de canales de transmisión
     broadcastHtml = `
       <div class="broadcast-wrapper" onclick="event.stopPropagation()">
         <div style="font-size: 11px; color: var(--clr-text-muted); text-align: center; margin-bottom: 8px;">
           Transmitiendo en: <strong style="color: var(--clr-text);">${suggestedChannels}</strong>
         </div>
-        <button class="btn btn--primary" style="width: 100%; padding: 8px; font-weight: bold; font-size: 14px; background: #e11d48; border: none; border-radius: 8px; cursor: pointer; color: white;" onclick="if(window.navigateTo) window.navigateTo('/live')">
-          🔴 VER PARTIDO EN VIVO
+        <button class="btn btn--primary" style="width: 100%; padding: 8px; font-weight: bold; font-size: 14px; background: linear-gradient(135deg, #e11d48, #be123c); border: none; border-radius: 8px; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="if(window.openMatchStreamSelector) window.openMatchStreamSelector('${matchTitle.replace(/'/g, "\\'")}')">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fff;animation:pulse 1.5s infinite;"></span>
+          VER PARTIDO EN VIVO
         </button>
       </div>
     `;
