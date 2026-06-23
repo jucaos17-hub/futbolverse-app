@@ -170,12 +170,25 @@ export async function renderLivePage(container) {
 
     gridContainer.innerHTML = filtered.map(c => renderLiveChannelCard(c)).join('');
 
-    // Attach click events
+    // Attach click events - open in browser
     gridContainer.querySelectorAll('.live-card').forEach(card => {
-      card.addEventListener('click', () => {
+      card.addEventListener('click', async () => {
         const url = card.getAttribute('data-url');
         const name = card.getAttribute('data-name');
-        openModal(name, url);
+        
+        if (Capacitor.isNativePlatform()) {
+          try {
+            const { Browser } = await import('@capacitor/browser');
+            await Browser.open({ url: url });
+          } catch (e) {
+            console.error('Error abriendo canal:', e);
+            // Fallback al modal interno
+            openModal(name, url);
+          }
+        } else {
+          // En navegador web, abrir en nueva pestaña
+          window.open(url, '_blank');
+        }
       });
     });
   }

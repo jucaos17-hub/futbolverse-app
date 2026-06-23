@@ -1,12 +1,27 @@
-import { Capacitor } from '@capacitor/core';
+import { CapacitorHttp, Capacitor } from '@capacitor/core';
 
+/**
+ * Fetches text content from a URL.
+ * Uses CapacitorHttp.get() on native (same as IPTV service that works).
+ * Uses CORS proxies on browser.
+ */
 async function fetchText(url) {
   const isNative = Capacitor.isNativePlatform();
+  
   if (isNative) {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('HTTP ' + response.status);
-    return await response.text();
+    // Use CapacitorHttp directly (same method as IPTV service)
+    try {
+      const res = await CapacitorHttp.get({ url });
+      if (res.status >= 200 && res.status < 400) {
+        return res.data;
+      }
+      throw new Error('HTTP ' + res.status);
+    } catch (err) {
+      console.error('[LiveAggregator] CapacitorHttp error for', url, err);
+      throw err;
+    }
   } else {
+    // Browser: Try CORS proxies
     const proxies = [
       (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
       (u) => 'https://corsproxy.io/?' + encodeURIComponent(u),
@@ -37,7 +52,7 @@ async function fetchJson(url) {
 export async function fetchLiveChannels() {
   const REMOTE_PLAYLISTS_URL = 'https://raw.githubusercontent.com/jucaos17-hub/futbolverse-app/main/remote_playlists.json';
   const fallbackUrls = [
-    { url: 'https://tecnotv.club/xm4p/deportes.m3u', name: 'Deportes' }
+    { url: 'https://tecnotv.club/ncnq/deportes.m3u', name: 'Deportes' }
   ];
 
   let sportsPlaylists = [];
@@ -67,21 +82,26 @@ export async function fetchLiveChannels() {
     sportsPlaylists = fallbackUrls;
   }
 
+  console.log('[LiveAggregator] Cargando', sportsPlaylists.length, 'playlists de deportes');
+
   try {
     const promises = sportsPlaylists.map(async (src) => {
       try {
         const data = await fetchText(src.url);
+        console.log('[LiveAggregator] Playlist', src.name, '- bytes:', data?.length || 0);
         return parseM3U(data, src.name);
       } catch (err) {
-        console.warn('Error cargando lista de deportes:', src.url, err);
+        console.warn('[LiveAggregator] Error cargando:', src.url, err);
         return [];
       }
     });
 
     const results = await Promise.all(promises);
-    return results.flat();
+    const allChannels = results.flat();
+    console.log('[LiveAggregator] Total canales cargados:', allChannels.length);
+    return allChannels;
   } catch (error) {
-    console.error('Error fetching live channels:', error);
+    console.error('[LiveAggregator] Error general:', error);
     return [];
   }
 }
@@ -117,13 +137,13 @@ function parseM3U(content, defaultGroup = 'Deportes') {
       if (currentChannel.name) {
         currentChannel.url = line;
         
-        // Determinar calidad simulada por el tipo de stream o random para darle vista premium
+        // Determinar calidad simulada por el tipo de stream
         currentChannel.quality = line.includes('1080') ? 'HD' : 'SD';
-        currentChannel.stability = Math.floor(Math.random() * 20) + 80; // 80-100%
-        currentChannel.ping = Math.floor(Math.random() * 50) + 10; // 10-60ms
+        currentChannel.stability = Math.floor(Math.random() * 20) + 80;
+        currentChannel.ping = Math.floor(Math.random() * 50) + 10;
         
         channels.push({ ...currentChannel });
-        currentChannel = {}; // reset
+        currentChannel = {};
       }
     }
   }

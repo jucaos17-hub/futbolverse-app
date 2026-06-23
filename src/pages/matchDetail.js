@@ -183,7 +183,7 @@ export async function renderMatchDetail(container, params) {
     if (liveChannelBtn) {
       const matchTitle = `${home.shortName || home.name} vs ${away.shortName || away.name}`;
       liveChannelBtn.addEventListener('click', () => {
-        openMatchStreamSelector(matchTitle);
+        openMatchStreamSelector(matchTitle, broadcasterList);
       });
     }
 
