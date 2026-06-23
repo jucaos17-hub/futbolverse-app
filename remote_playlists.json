@@ -1,18 +1,12 @@
 {
   "version": 1,
-  "updated": "2026-06-16",
+  "updated": "2026-06-23",
   "categories": [
     {
       "name": "📺 TV en Vivo",
       "playlists": [
         {
           "name": "🌎 TV (Todos los canales)",
-          "url": "https://tecnotv.club/ncnq/lista.m3u",
-          "user": "",
-          "pass": ""
-        },
-        {
-          "name": "PRINCIPAL SSIPTV",
           "url": "https://tecnotv.club/11qu/lista.m3u",
           "user": "",
           "pass": ""
@@ -24,12 +18,6 @@
       "playlists": [
         {
           "name": "⚽ TecnoTV Deportes",
-          "url": "https://tecnotv.club/ncnq/deportes.m3u",
-          "user": "",
-          "pass": ""
-        },
-        {
-          "name": "TecnoTV Deportes",
           "url": "https://tecnotv.club/11qu/deportes.m3u",
           "user": "",
           "pass": ""
@@ -41,12 +29,6 @@
       "playlists": [
         {
           "name": "🎬 Peliculas",
-          "url": "https://tecnotv.club/ncnq/peliculas.m3u",
-          "user": "",
-          "pass": ""
-        },
-        {
-          "name": "Peliculas",
           "url": "https://tecnotv.club/11qu/peliculas.m3u",
           "user": "",
           "pass": ""
