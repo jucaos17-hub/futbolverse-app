@@ -1,10 +1,10 @@
 const API_KEY = 'f93a91526c234116b729d653cb461953';
 
-// En desarrollo (Vite dev server) usa proxy relativo; en producción/APK usa URL absoluta
-const isNativeApp = !!window.Capacitor || window.location.protocol === 'file:' || window.location.protocol === 'capacitor:';
-const BASE_URL = isNativeApp
-  ? 'https://api.football-data.org/v4'
-  : '/api/v4';
+// En desarrollo (Vite dev server) usa proxy relativo; en producción (GitHub Pages / APK) usa URL absoluta
+const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const BASE_URL = isLocalDev
+  ? '/api/v4'
+  : 'https://api.football-data.org/v4';
 
 let requestQueue = [];
 let isProcessing = false;
@@ -16,11 +16,27 @@ async function processQueue() {
   while (requestQueue.length > 0) {
     const { url, resolve, reject } = requestQueue.shift();
     try {
-      const response = await fetch(url, {
-        headers: {
-          'X-Auth-Token': API_KEY,
-        },
-      });
+      let response;
+      try {
+        response = await fetch(url, {
+          headers: {
+            'X-Auth-Token': API_KEY,
+          },
+        });
+      } catch (fetchErr) {
+        // Si falla por CORS en GitHub Pages (entorno web en producción), intentamos con un proxy CORS público
+        if (!isLocalDev && url.startsWith('https://api.football-data.org')) {
+          console.warn('[API] Fallo de conexión/CORS directo, intentando a través de proxy CORS...', fetchErr);
+          const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+          response = await fetch(corsProxyUrl, {
+            headers: {
+              'X-Auth-Token': API_KEY,
+            },
+          });
+        } else {
+          throw fetchErr;
+        }
+      }
 
       if (response.status === 429) {
         // Rate limited — wait and retry
