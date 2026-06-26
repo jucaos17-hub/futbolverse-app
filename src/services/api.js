@@ -1,7 +1,8 @@
 const API_KEY = 'f93a91526c234116b729d653cb461953';
 
-// En desarrollo (Vite dev server) usa proxy relativo; en producción (GitHub Pages / APK) usa URL absoluta
-const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+// En desarrollo (Vite dev server) usa proxy relativo; en producción (GitHub Pages / APK nativa) usa URL absoluta
+// NOTA: Capacitor en Android usa http://localhost, por eso validamos que NO exista window.Capacitor para confirmar que es Vite en PC.
+const isLocalDev = !window.Capacitor && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 const BASE_URL = isLocalDev
   ? '/api/v4'
   : 'https://api.football-data.org/v4';
