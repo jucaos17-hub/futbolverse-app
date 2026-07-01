@@ -1,12 +1,14 @@
 import { getStandings } from '../services/football.js';
 import { renderStandingsTable } from '../components/standingsTable.js';
 import { renderSkeleton } from '../components/skeleton.js';
-import { COMPETITIONS } from '../utils/constants.js';
+import { COMPETITIONS, TOURNAMENT_COMPETITIONS } from '../utils/constants.js';
 import { navigateTo } from '../router.js';
+import { loadKnockoutBracket, attachKnockoutEvents } from '../components/knockoutBracket.js';
 
 export async function renderStandingsPage(container, params) {
   const code = params.code || 'PL';
   const compInfo = COMPETITIONS.find(c => c.code === code) || { name: code, flag: '🏆' };
+  const isTournament = TOURNAMENT_COMPETITIONS.includes(code);
 
   container.innerHTML = `
     <div class="container">
@@ -23,6 +25,12 @@ export async function renderStandingsPage(container, params) {
           </select>
         </div>
       </div>
+      ${isTournament ? `
+        <div class="standings-tabs" id="standings-tabs">
+          <button class="standings-tabs__btn active" data-tab="groups">📊 Fase de Grupos</button>
+          <button class="standings-tabs__btn" data-tab="knockout">🏆 Eliminatorias</button>
+        </div>
+      ` : ''}
       <div id="standings-content">
         ${renderSkeleton('cards', 10)}
       </div>
@@ -38,7 +46,34 @@ export async function renderStandingsPage(container, params) {
   }
 
   let refreshTimer = null;
+  let currentTab = 'groups';
 
+  // ── Tab switching (only for tournaments) ──
+  if (isTournament) {
+    document.querySelectorAll('.standings-tabs__btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-tab');
+        if (tab === currentTab) return;
+        currentTab = tab;
+
+        // Update active tab button
+        document.querySelectorAll('.standings-tabs__btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Load appropriate content
+        const content = document.getElementById('standings-content');
+        if (content) content.innerHTML = renderSkeleton('cards', 8);
+        
+        if (tab === 'groups') {
+          loadStandings();
+        } else {
+          loadKnockout();
+        }
+      });
+    });
+  }
+
+  // ── Load group standings ──
   async function loadStandings() {
     try {
       const data = await getStandings(code);
@@ -109,11 +144,37 @@ export async function renderStandingsPage(container, params) {
     }
   }
 
+  // ── Load knockout bracket ──
+  async function loadKnockout() {
+    const content = document.getElementById('standings-content');
+    if (!content) return;
+
+    try {
+      const bracketHtml = await loadKnockoutBracket(code);
+      content.innerHTML = `<div class="anim-fade-up">${bracketHtml}</div>`;
+      attachKnockoutEvents();
+    } catch (err) {
+      console.error('[Knockout] Error:', err);
+      content.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">⚠️</div>
+          <div class="empty-state__title">Error al cargar eliminatorias</div>
+          <div class="empty-state__text">${err.message}</div>
+        </div>
+      `;
+    }
+  }
+
+  // Load initial data (always start with group standings)
   await loadStandings();
 
   // Auto-refresh every 2 minutes
   refreshTimer = setInterval(() => {
-    loadStandings();
+    if (currentTab === 'groups') {
+      loadStandings();
+    } else {
+      loadKnockout();
+    }
   }, 120000);
 
   // Return cleanup function

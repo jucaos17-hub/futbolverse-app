@@ -18,6 +18,18 @@ export const COMPETITION_MAP = Object.fromEntries(
   COMPETITIONS.map(c => [c.code, c])
 );
 
+// Competitions that have knockout stages (cup/tournament format)
+export const TOURNAMENT_COMPETITIONS = ['WC', 'EC', 'CL'];
+
+// Knockout stages in display order with Spanish labels
+export const KNOCKOUT_STAGES = [
+  { stage: 'LAST_16',        label: 'Octavos de Final',  short: '8vos' },
+  { stage: 'QUARTER_FINALS',  label: 'Cuartos de Final', short: '4tos' },
+  { stage: 'SEMI_FINALS',     label: 'Semifinales',      short: 'Semis' },
+  { stage: 'THIRD_PLACE',     label: 'Tercer Puesto',    short: '3er' },
+  { stage: 'FINAL',           label: 'Final',            short: 'Final' },
+];
+
 // Status translations
 export const STATUS_LABELS = {
   SCHEDULED: 'Programado',

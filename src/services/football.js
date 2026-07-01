@@ -106,3 +106,9 @@ export async function getMatch(id) {
 export async function getCompetitionTeams(code) {
   return cachedFetch(`comp_teams_${code}`, `/competitions/${code}/teams`, 'teams');
 }
+
+/** Get matches for a specific stage of a competition (e.g. LAST_16, QUARTER_FINALS) */
+export async function getCompetitionMatchesByStage(code, stage) {
+  const key = `comp_stage_${code}_${stage}`;
+  return cachedFetch(key, `/competitions/${code}/matches?stage=${stage}`, 'matches');
+}
