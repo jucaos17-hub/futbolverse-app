@@ -7,7 +7,7 @@
       "playlists": [
         {
           "name": "🌎 TV (Todos los canales)",
-          "url": "https://tecnotv.club/gnwa/lista.m3u",
+          "url": "https://tecnotv.club/hz41/lista.m3u",
           "user": "",
           "pass": ""
         }
@@ -18,7 +18,7 @@
       "playlists": [
         {
           "name": "⚽ TecnoTV Deportes",
-          "url": "https://tecnotv.club/gnwa/deportes.m3u",
+          "url": "https://tecnotv.club/hz41/deportes.m3u",
           "user": "",
           "pass": ""
         }
@@ -29,7 +29,7 @@
       "playlists": [
         {
           "name": "🎬 Peliculas",
-          "url": "https://tecnotv.club/gnwa/peliculas.m3u",
+          "url": "https://tecnotv.club/hz41/peliculas.m3u",
           "user": "",
           "pass": ""
         }
