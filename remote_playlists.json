@@ -7,7 +7,7 @@
       "playlists": [
         {
           "name": "🌎 TV (Todos los canales)",
-          "url": "https://tecnotv.club/embz/lista.m3u",
+          "url": "https://tecnotv.club/rvyb/lista.m3u",
           "user": "",
           "pass": ""
         }
@@ -18,7 +18,7 @@
       "playlists": [
         {
           "name": "⚽ TecnoTV Deportes",
-          "url": "https://tecnotv.club/embz/deportes.m3u",
+          "url": "https://tecnotv.club/rvyb/deportes.m3u",
           "user": "",
           "pass": ""
         }
@@ -29,7 +29,7 @@
       "playlists": [
         {
           "name": "🎬 Peliculas",
-          "url": "https://tecnotv.club/embz/peliculas.m3u",
+          "url": "https://tecnotv.club/rvyb/peliculas.m3u",
           "user": "",
           "pass": ""
         }
