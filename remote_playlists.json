@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "updated": "2026-09-04",
+  "updated": "2026-09-05",
   "categories": [
     {
       "name": "📺 TV en Vivo",
       "playlists": [
         {
           "name": "🌎 TV (Todos los canales)",
-          "url": "https://tecnotv.club/rvyb/lista.m3u",
+          "url": "https://tecnotv.club/m1z9/lista.m3u",
           "user": "",
           "pass": ""
         }
@@ -18,7 +18,7 @@
       "playlists": [
         {
           "name": "⚽ TecnoTV Deportes",
-          "url": "https://tecnotv.club/rvyb/deportes.m3u",
+          "url": "https://tecnotv.club/m1z9/deportes.m3u",
           "user": "",
           "pass": ""
         }
@@ -29,7 +29,7 @@
       "playlists": [
         {
           "name": "🎬 Peliculas",
-          "url": "https://tecnotv.club/rvyb/peliculas.m3u",
+          "url": "https://tecnotv.club/m1z9/peliculas.m3u",
           "user": "",
           "pass": ""
         }
