@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "updated": "2026-10-05",
+  "updated": "2026-10-06",
   "categories": [
     {
       "name": "📺 TV en Vivo",
       "playlists": [
         {
           "name": "🌎 TV (Todos los canales)",
-          "url": "https://tecnotv.club/gfhr/lista.m3u",
+          "url": "https://tecnotv.club/ydpx/lista.m3u",
           "user": "",
           "pass": ""
         }
@@ -18,7 +18,7 @@
       "playlists": [
         {
           "name": "⚽ TecnoTV Deportes",
-          "url": "https://tecnotv.club/gfhr/deportes.m3u",
+          "url": "https://tecnotv.club/ydpx/deportes.m3u",
           "user": "",
           "pass": ""
         }
@@ -29,7 +29,7 @@
       "playlists": [
         {
           "name": "🎬 Peliculas",
-          "url": "https://tecnotv.club/gfhr/peliculas.m3u",
+          "url": "https://tecnotv.club/ydpx/peliculas.m3u",
           "user": "",
           "pass": ""
         }
