@@ -7,7 +7,7 @@
       "playlists": [
         {
           "name": "🌎 TV (Todos los canales)",
-          "url": "https://tecnotv.club/q7sz/lista.m3u",
+          "url": "https://tecnotv.club/pumm/lista.m3u",
           "user": "",
           "pass": ""
         }
@@ -18,7 +18,7 @@
       "playlists": [
         {
           "name": "⚽ TecnoTV Deportes",
-          "url": "https://tecnotv.club/q7sz/deportes.m3u",
+          "url": "https://tecnotv.club/pumm/deportes.m3u",
           "user": "",
           "pass": ""
         }
@@ -29,7 +29,7 @@
       "playlists": [
         {
           "name": "🎬 Peliculas",
-          "url": "https://tecnotv.club/q7sz/peliculas.m3u",
+          "url": "https://tecnotv.club/pumm/peliculas.m3u",
           "user": "",
           "pass": ""
         }
